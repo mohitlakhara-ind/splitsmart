@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "SplitSmart",
+    "slug": "splitsmart",
+    "description": "Smart group expense splitting — track, split, and settle bills effortlessly",
+    "platforms": ["ios", "android", "web"],
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0D0A1E"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mohitlakhara.splitsmart",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Allow SplitSmart to select a group icon from your photo library.",
+        "NSCameraUsageDescription": "Allow SplitSmart to scan receipts using your camera."
+      }
+    },
+    "android": {
+      "package": "com.mohitlakhara.splitsmart",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0D0A1E"
+      },
+      "edgeToEdgeEnabled": true,
+      "permissions": ["READ_MEDIA_IMAGES", "CAMERA"]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
