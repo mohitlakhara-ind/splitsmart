@@ -133,6 +133,32 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const loginWithGoogle = async (idToken) => {
+    try {
+      const response = await authApi.loginWithGoogle(idToken);
+      const { access_token, refresh_token, user: userData } = response.data;
+      setToken(access_token);
+      setRefresh(refresh_token);
+      await setAuthTokens({
+        newAccessToken: access_token,
+        newRefreshToken: refresh_token,
+      });
+      const normalizedUser = userData?._id
+        ? userData
+        : userData?.id
+        ? { ...userData, _id: userData.id }
+        : userData;
+      setUser(normalizedUser);
+      return true;
+    } catch (error) {
+      console.error(
+        "Google login failed:",
+        error.response?.data?.detail || error.message
+      );
+      return false;
+    }
+  };
+
   const signup = async (name, email, password) => {
     try {
       const response = await authApi.signup(name, email, password);
@@ -193,6 +219,7 @@ export const AuthProvider = ({ children }) => {
         token,
         isLoading,
         login,
+        loginWithGoogle,
         signup,
         logout,
         updateUserInContext,

@@ -8,6 +8,7 @@ import { ToastProvider } from './contexts/ToastContext';
 import { ConfirmProvider } from './contexts/ConfirmContext';
 import { ToastContainer } from './components/ui/Toast';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { Landing } from './pages/Landing';
 import { Auth } from './pages/Auth';
 import { Dashboard } from './pages/Dashboard';
 import { Friends } from './pages/Friends';
@@ -36,6 +37,7 @@ const AppRoutes = () => {
     
     return (
         <Routes>
+          <Route path="/" element={<Landing />} />
           <Route path="/login" element={!isAuthenticated ? <ThemeWrapper><Auth /></ThemeWrapper> : <Navigate to="/dashboard" />} />
           <Route path="/signup" element={!isAuthenticated ? <ThemeWrapper><Auth /></ThemeWrapper> : <Navigate to="/dashboard" />} />
           
@@ -48,7 +50,7 @@ const AppRoutes = () => {
           <Route path="/import/splitwise/select-groups" element={<ProtectedRoute><SplitwiseGroupSelection /></ProtectedRoute>} />
           <Route path="/import/splitwise/callback" element={<ProtectedRoute><SplitwiseCallback /></ProtectedRoute>} />
           
-          <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
+          <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/"} />} />
         </Routes>
     );
 }

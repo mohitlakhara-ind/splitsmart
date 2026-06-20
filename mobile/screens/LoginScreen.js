@@ -1,16 +1,23 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Text, TextInput, useTheme } from 'react-native-paper';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import HapticButton from '../components/ui/HapticButton';
 import { AuthContext } from '../context/AuthContext';
 import { Spacing, Radii } from '../theme/colors';
 import GlassCard from '../components/GlassCard';
 
+// Configure Google Sign-In
+GoogleSignin.configure({
+  webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || 'your-google-web-client-id.apps.googleusercontent.com',
+  offlineAccess: true,
+});
+
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useContext(AuthContext);
+  const { login, loginWithGoogle } = useContext(AuthContext);
   const theme = useTheme();
   const customColors = theme.colors.custom;
 
@@ -24,6 +31,35 @@ const LoginScreen = ({ navigation }) => {
     setIsLoading(false);
     if (!success) {
       Alert.alert('Login Failed', 'Invalid email or password. Please try again.');
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      const idToken = userInfo.data?.idToken || userInfo.idToken;
+      if (!idToken) {
+        Alert.alert('Error', 'No ID token received from Google.');
+        return;
+      }
+      setIsLoading(true);
+      const success = await loginWithGoogle(idToken);
+      setIsLoading(false);
+      if (!success) {
+        Alert.alert('Login Failed', 'Authentication with SplitSmart server failed.');
+      }
+    } catch (error) {
+      setIsLoading(false);
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        // User cancelled
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        // In progress
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        Alert.alert('Google Play Services', 'Play services not available or outdated.');
+      } else {
+        Alert.alert('Google Login Error', error.message || 'An error occurred during Google Sign-In.');
+      }
     }
   };
 
@@ -74,6 +110,31 @@ const LoginScreen = ({ navigation }) => {
       marginTop: 8,
       borderRadius: Radii.md,
       paddingVertical: 6,
+    },
+    dividerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginVertical: 16,
+    },
+    divider: {
+      flex: 1,
+      height: 1,
+      backgroundColor: theme.colors.outline,
+    },
+    dividerText: {
+      marginHorizontal: 8,
+      fontSize: 12,
+      color: customColors.textMuted,
+      fontWeight: '600',
+    },
+    googleButton: {
+      borderRadius: Radii.md,
+      paddingVertical: 6,
+      borderColor: theme.colors.outline,
+    },
+    googleButtonText: {
+      color: theme.colors.onBackground,
+      fontWeight: '700',
     },
     signUpButton: {
       marginTop: 16,
@@ -134,6 +195,26 @@ const LoginScreen = ({ navigation }) => {
           >
             Login
           </HapticButton>
+
+          <View style={styles.dividerContainer}>
+            <View style={styles.divider} />
+            <Text style={styles.dividerText}>OR</Text>
+            <View style={styles.divider} />
+          </View>
+
+          <HapticButton
+            mode="outlined"
+            onPress={handleGoogleLogin}
+            style={styles.googleButton}
+            labelStyle={styles.googleButtonText}
+            icon="google"
+            loading={isLoading}
+            disabled={isLoading}
+            accessibilityLabel="Continue with Google"
+            accessibilityRole="button"
+          >
+            Continue with Google
+          </HapticButton>
         </GlassCard>
 
         <HapticButton
@@ -151,6 +232,5 @@ const LoginScreen = ({ navigation }) => {
     </KeyboardAvoidingView>
   );
 };
-
 
 export default LoginScreen;
