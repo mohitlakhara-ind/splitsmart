@@ -178,6 +178,20 @@ export const Auth = () => {
                 Beautiful, intuitive interface
               </p>
             </div>
+
+            <div className="mt-10 pt-6 border-t border-white/10 flex flex-col gap-3">
+              <span className="text-white/60 text-xs font-semibold uppercase tracking-wider">Get the App</span>
+              <a
+                href="/splitsmart.apk"
+                download
+                className="inline-flex items-center gap-3 self-start px-5 py-3 bg-white text-[var(--color-fintech-primary)] hover:bg-[var(--color-fintech-bg-alt)] font-bold rounded-xl shadow-lg transition-all text-sm group"
+              >
+                <svg className="w-5 h-5 text-green-600 transition-transform group-hover:scale-110" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17.5 12c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm-11 0c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm11.56-5.3l1.83-3.17c.07-.12.03-.28-.09-.35-.12-.07-.28-.03-.35.09l-1.85 3.2C16.14 5.76 14.15 5 12 5c-2.15 0-4.14.76-5.63 1.97L4.52 3.77c-.07-.12-.23-.16-.35-.09-.12.07-.16.23-.09.35l1.83 3.17C2.7 9.17 1 12.38 1 16h22c0-3.62-1.7-6.83-4.94-9.3z"/>
+                </svg>
+                Download SplitSmart Android App
+              </a>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -318,6 +332,20 @@ export const Auth = () => {
                   ? "Don't have an account? Sign Up"
                   : 'Already have an account? Log In'}
               </button>
+            </div>
+
+            <div className="text-center pt-6 border-t border-[var(--color-fintech-border)] mt-6">
+              <p className="text-xs text-[var(--color-fintech-text-muted)] font-semibold mb-3">Or use the mobile app</p>
+              <a
+                href="/splitsmart.apk"
+                download
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--color-fintech-bg-alt)] border border-[var(--color-fintech-border)] hover:bg-[var(--color-fintech-border)] text-[var(--color-fintech-text)] font-semibold rounded-xl shadow-sm transition-all text-xs group"
+              >
+                <svg className="w-4 h-4 text-green-500 transition-transform group-hover:scale-110" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17.5 12c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm-11 0c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm11.56-5.3l1.83-3.17c.07-.12.03-.28-.09-.35-.12-.07-.28-.03-.35.09l-1.85 3.2C16.14 5.76 14.15 5 12 5c-2.15 0-4.14.76-5.63 1.97L4.52 3.77c-.07-.12-.23-.16-.35-.09-.12.07-.16.23-.09.35l1.83 3.17C2.7 9.17 1 12.38 1 16h22c0-3.62-1.7-6.83-4.94-9.3z"/>
+                </svg>
+                Download SplitSmart Android App (APK)
+              </a>
             </div>
           </div>
         </div>
