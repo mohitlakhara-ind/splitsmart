@@ -1,8 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { THEMES } from '../constants';
-import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
 import { getImportStatus, handleSplitwiseCallback } from '../services/api';
 
@@ -10,8 +8,6 @@ export const SplitwiseCallback = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { addToast } = useToast();
-  const { style } = useTheme();
-  const isNeo = style === THEMES.NEOBRUTALISM;
   const [status, setStatus] = useState('Processing authorization...');
   const [progress, setProgress] = useState(0);
   const [importing, setImporting] = useState(true);
@@ -124,45 +120,39 @@ export const SplitwiseCallback = () => {
   };
 
   return (
-    <div className={`min-h-screen py-8 px-4 flex items-center justify-center transition-colors duration-300 ${isNeo ? 'bg-gray-100' : 'bg-gray-50 dark:bg-gray-900'}`}>
+    <div className="min-h-screen py-8 px-4 flex items-center justify-center transition-colors duration-300 bg-[var(--color-fintech-bg)]">
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className={`max-w-md w-full ${isNeo
-          ? 'bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-8 rounded-none'
-          : 'bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8'}`}
+        className="max-w-md w-full bg-[var(--color-fintech-bg-alt)] rounded-3xl shadow-md border border-[var(--color-fintech-border)] p-8"
       >
         <div className="text-center mb-6">
-          <div className={`inline-block animate-spin rounded-full h-10 w-10 border-2 mb-4 ${isNeo ? 'border-black border-t-transparent' : 'border-blue-500 border-t-transparent'}`}></div>
-          <h1 className={`text-2xl md:text-3xl font-bold mb-2 ${isNeo ? 'text-black' : 'text-gray-900 dark:text-white'}`}>
+          <div className="inline-block animate-spin rounded-full h-10 w-10 border-2 mb-4 border-[var(--color-fintech-primary)] border-t-transparent"></div>
+          <h1 className="text-2xl md:text-3xl font-display font-bold mb-2 text-[var(--color-fintech-text)]">
             {importing ? 'Importing Data' : 'Processing'}
           </h1>
-          <p className={`text-base ${isNeo ? 'text-black/70' : 'text-gray-600 dark:text-gray-400'}`}>{status}</p>
+          <p className="text-base font-medium text-[var(--color-fintech-text-muted)]">{status}</p>
         </div>
 
         {importing && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className={`text-sm font-medium ${isNeo ? 'text-black/70' : 'text-gray-600 dark:text-gray-400'}`}>Progress</span>
-              <span className={`text-lg font-bold ${isNeo ? 'text-black' : 'text-gray-900 dark:text-white'}`}>
+              <span className="text-sm font-semibold text-[var(--color-fintech-text-muted)]">Progress</span>
+              <span className="text-lg font-bold text-[var(--color-fintech-text)]">
                 {progress.toFixed(0)}%
               </span>
             </div>
-            <div className={`w-full h-2 ${isNeo ? 'bg-gray-200 border border-black' : 'bg-gray-200 dark:bg-gray-700 rounded-full'}`}>
+            <div className="w-full h-2 bg-[var(--color-fintech-border)] rounded-full border border-[var(--color-fintech-border)]">
               <div
-                className={`h-full transition-all duration-300 ease-out ${isNeo
-                  ? 'bg-blue-500'
-                  : 'bg-blue-500 rounded-full'}`}
+                className="h-full transition-all duration-300 ease-out bg-[var(--color-fintech-primary)] rounded-full"
                 style={{ width: `${progress}%` }}
               />
             </div>
           </div>
         )}
 
-        <div className={`mt-6 p-4 ${isNeo
-          ? 'bg-blue-50 border-2 border-black rounded-none'
-          : 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg'}`}>
-          <p className={`text-sm ${isNeo ? 'text-black/80' : 'text-blue-800 dark:text-blue-200'}`}>
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-100 rounded-2xl">
+          <p className="text-sm font-medium text-blue-800 text-center">
             Please don't close this page until the import is complete.
           </p>
         </div>

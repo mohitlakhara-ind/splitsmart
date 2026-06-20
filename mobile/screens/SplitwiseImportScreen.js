@@ -6,13 +6,17 @@ import {
     IconButton,
     List,
     Text,
+    useTheme,
 } from "react-native-paper";
 import HapticButton from '../components/ui/HapticButton';
 import { HapticAppbarBackAction } from '../components/ui/HapticAppbar';
 import { getSplitwiseAuthUrl } from "../api/client";
+import { Spacing, Radii } from "../theme/colors";
 
 const SplitwiseImportScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
+  const theme = useTheme();
+  const customColors = theme.colors.custom;
 
   const handleOAuthImport = async () => {
     setLoading(true);
@@ -20,7 +24,6 @@ const SplitwiseImportScreen = ({ navigation }) => {
       const response = await getSplitwiseAuthUrl();
       const { authorization_url } = response.data;
 
-      // Open Splitwise OAuth in browser
       const supported = await Linking.canOpenURL(authorization_url);
       if (supported) {
         await Linking.openURL(authorization_url);
@@ -43,15 +46,75 @@ const SplitwiseImportScreen = ({ navigation }) => {
     }
   };
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    content: {
+      flex: 1,
+      padding: Spacing.md,
+    },
+    card: {
+      marginBottom: Spacing.md,
+      backgroundColor: theme.colors.surface,
+      borderWidth: 1,
+      borderColor: theme.colors.outline,
+      borderRadius: Radii.md,
+    },
+    title: {
+      marginBottom: 8,
+      textAlign: "center",
+      fontWeight: 'bold',
+      color: theme.colors.onSurface,
+    },
+    subtitle: {
+      marginBottom: 24,
+      textAlign: "center",
+      color: customColors.textSecondary,
+    },
+    helperText: {
+      marginTop: 16,
+      textAlign: "center",
+      color: customColors.textMuted,
+    },
+    button: {
+      paddingVertical: 4,
+      borderRadius: Radii.md,
+    },
+    infoCard: {
+      marginBottom: Spacing.md,
+      backgroundColor: theme.dark ? "rgba(33, 150, 243, 0.15)" : "#E3F2FD",
+      borderWidth: 1,
+      borderColor: theme.dark ? "rgba(33, 150, 243, 0.3)" : "#B3E5FC",
+      borderRadius: Radii.md,
+    },
+    warningCard: {
+      marginBottom: Spacing.md,
+      backgroundColor: theme.dark ? "rgba(255, 152, 0, 0.15)" : "#FFF3E0",
+      borderWidth: 1,
+      borderColor: theme.dark ? "rgba(255, 152, 0, 0.3)" : "#FFE0B2",
+      borderRadius: Radii.md,
+    },
+    warningText: {
+      marginBottom: 4,
+      color: theme.colors.onSurface,
+    },
+    listItemText: {
+      color: theme.colors.onSurface,
+      fontSize: 14,
+    }
+  });
+
   return (
     <View style={styles.container}>
-      <Appbar.Header>
-        <HapticAppbarBackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Import from Splitwise" />
+      <Appbar.Header style={{ backgroundColor: theme.colors.surface }}>
+        <HapticAppbarBackAction color={theme.colors.onSurface} onPress={() => navigation.goBack()} />
+        <Appbar.Content title="Import from Splitwise" titleStyle={{ fontWeight: 'bold', color: theme.colors.onSurface }} />
       </Appbar.Header>
 
-      <ScrollView style={styles.content}>
-        <Card style={styles.card}>
+      <ScrollView style={styles.content} contentContainerStyle={{ paddingBottom: 140 }}>
+        <Card style={styles.card} mode="outlined">
           <Card.Content>
             <Text variant="headlineSmall" style={styles.title}>
               Import Your Splitwise Data
@@ -80,35 +143,41 @@ const SplitwiseImportScreen = ({ navigation }) => {
           </Card.Content>
         </Card>
 
-        <Card style={styles.infoCard}>
+        <Card style={styles.infoCard} mode="outlined">
           <Card.Title
             title="What will be imported?"
-            left={(props) => <IconButton {...props} icon="information" />}
+            titleStyle={{ color: theme.colors.onSurface, fontWeight: '700' }}
+            left={(props) => <IconButton {...props} icon="information" iconColor={theme.colors.primary} />}
           />
           <Card.Content>
             <List.Item
               title="All your friends and their details"
-              left={(props) => <List.Icon {...props} icon="account-group" />}
+              titleStyle={styles.listItemText}
+              left={(props) => <List.Icon {...props} icon="account-group" color={customColors.textSecondary} />}
             />
             <List.Item
               title="All your groups with members"
-              left={(props) => <List.Icon {...props} icon="account-multiple" />}
+              titleStyle={styles.listItemText}
+              left={(props) => <List.Icon {...props} icon="account-multiple" color={customColors.textSecondary} />}
             />
             <List.Item
               title="All expenses with split details"
-              left={(props) => <List.Icon {...props} icon="currency-usd" />}
+              titleStyle={styles.listItemText}
+              left={(props) => <List.Icon {...props} icon="currency-usd" color={customColors.textSecondary} />}
             />
             <List.Item
               title="All balances and settlements"
-              left={(props) => <List.Icon {...props} icon="scale-balance" />}
+              titleStyle={styles.listItemText}
+              left={(props) => <List.Icon {...props} icon="scale-balance" color={customColors.textSecondary} />}
             />
           </Card.Content>
         </Card>
 
-        <Card style={styles.warningCard}>
+        <Card style={styles.warningCard} mode="outlined">
           <Card.Title
             title="Important Note"
-            left={(props) => <IconButton {...props} icon="alert" />}
+            titleStyle={{ color: theme.colors.onSurface, fontWeight: '700' }}
+            left={(props) => <IconButton {...props} icon="alert" iconColor={customColors.warning} />}
           />
           <Card.Content>
             <Text variant="bodySmall" style={styles.warningText}>
@@ -123,66 +192,5 @@ const SplitwiseImportScreen = ({ navigation }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-  },
-  card: {
-    marginBottom: 16,
-  },
-  title: {
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  subtitle: {
-    marginBottom: 24,
-    textAlign: "center",
-    opacity: 0.7,
-  },
-  input: {
-    marginBottom: 8,
-  },
-  helperText: {
-    marginBottom: 24,
-    opacity: 0.7,
-  },
-  link: {
-    color: "#2196F3",
-  },
-  progressContainer: {
-    marginBottom: 24,
-  },
-  progressHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 8,
-  },
-  progressText: {
-    fontWeight: "bold",
-  },
-  progressBar: {
-    height: 8,
-    borderRadius: 4,
-  },
-  button: {
-    paddingVertical: 8,
-  },
-  infoCard: {
-    marginBottom: 16,
-    backgroundColor: "#E3F2FD",
-  },
-  warningCard: {
-    marginBottom: 16,
-    backgroundColor: "#FFF3E0",
-  },
-  warningText: {
-    marginBottom: 4,
-  },
-});
 
 export default SplitwiseImportScreen;

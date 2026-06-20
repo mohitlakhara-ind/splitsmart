@@ -1,12 +1,11 @@
 import { CreditCard, Layers, LayoutDashboard, LogOut, Moon, Sun, UserCircle, Users } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-import { THEMES } from '../../constants';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Button } from '../ui/Button';
 
 export const Sidebar = () => {
-  const { style, mode, toggleMode, toggleStyle } = useTheme();
+  const { mode, toggleMode } = useTheme();
   const { logout, user } = useAuth();
   const location = useLocation();
 
@@ -19,34 +18,27 @@ export const Sidebar = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  let containerStyles = "h-full w-full flex flex-col p-6 ";
-  if (style === THEMES.NEOBRUTALISM) {
-    containerStyles += `border-r-2 border-black ${mode === 'dark' ? 'bg-zinc-900' : 'bg-neo-bg'}`;
-  } else {
-    containerStyles += "backdrop-blur-xl border-r border-white/10 bg-white/5";
-  }
+  const containerStyles = "h-full w-full flex flex-col p-6 bg-[var(--color-fintech-bg)] border-r border-[var(--color-fintech-border)]";
 
   return (
     <div className={containerStyles}>
-      <div className="mb-8">
-        <h1 className={`text-3xl font-extrabold flex items-center gap-2 ${style === THEMES.NEOBRUTALISM ? 'font-mono uppercase tracking-tighter' : 'bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500'}`}>
-          <CreditCard className={style === THEMES.NEOBRUTALISM ? 'stroke-[3px]' : ''} />
+      <div className="mb-8 px-2">
+        <h1 className={`text-2xl font-display font-bold flex items-center gap-2 text-[var(--color-fintech-primary)]`}>
+          <CreditCard className="text-[var(--color-fintech-primary)]" />
           Splitwiser
         </h1>
       </div>
 
-      <nav className="flex-1 flex flex-col gap-4">
+      <nav className="flex-1 flex flex-col gap-2">
         {navItems.map((item) => (
           <Link to={item.path} key={item.path}>
-            <div className={`flex items-center gap-3 px-4 py-3 transition-all ${
+            <div className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
               isActive(item.path) 
-                ? (style === THEMES.NEOBRUTALISM 
-                    ? 'bg-neo-main text-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' 
-                    : 'bg-white/20 text-white rounded-xl shadow-lg border border-white/20')
-                : 'hover:opacity-70'
+                ? 'bg-[var(--color-fintech-primary)] text-white shadow-sm font-semibold'
+                : 'text-[var(--color-fintech-text-muted)] hover:bg-[var(--color-fintech-bg-alt)] hover:text-[var(--color-fintech-text)]'
             }`}>
               <item.icon size={20} />
-              <span className="font-bold">{item.label}</span>
+              <span>{item.label}</span>
             </div>
           </Link>
         ))}
@@ -54,33 +46,29 @@ export const Sidebar = () => {
 
       <div className="mt-auto flex flex-col gap-4">
         {user && (
-          <div className={`p-4 flex items-center gap-3 ${style === THEMES.NEOBRUTALISM ? 'border-2 border-black bg-white text-black' : 'rounded-xl bg-black/20 text-white'}`}>
+          <div className="p-3 flex items-center gap-3 rounded-xl bg-[var(--color-fintech-bg-alt)] border border-[var(--color-fintech-border)]">
              {user.imageUrl && /^(https?:|data:image)/.test(user.imageUrl) ? (
-                <img src={user.imageUrl} alt={user.name} className="w-8 h-8 rounded-full object-cover" />
+                <img src={user.imageUrl} alt={user.name} className="w-10 h-10 rounded-full object-cover shadow-sm" />
              ) : (
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center font-bold text-white">
+                <div className="w-10 h-10 rounded-full bg-[var(--color-fintech-primary)] flex items-center justify-center font-bold text-white shadow-sm">
                    {user.name.charAt(0)}
                 </div>
              )}
              <div className="flex-1 overflow-hidden">
-               <p className="font-bold truncate">{user.name}</p>
+               <p className="font-semibold text-sm truncate text-[var(--color-fintech-text)]">{user.name}</p>
+               <p className="text-xs text-[var(--color-fintech-text-muted)] truncate">{user.email}</p>
              </div>
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-2">
-           <Button size="sm" variant="secondary" onClick={toggleMode} title="Toggle Dark Mode">
+        <div className="flex gap-2">
+           <Button size="sm" variant="ghost" onClick={toggleMode} className="flex-1 justify-center border border-[var(--color-fintech-border)]" title="Toggle Dark Mode">
              {mode === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
            </Button>
-           <Button size="sm" variant="secondary" onClick={toggleStyle} title="Toggle Theme Style">
-             {style === THEMES.NEOBRUTALISM ? 'Glass' : 'Neo'}
+           <Button variant="ghost" onClick={logout} className="flex-1 justify-center text-red-500 hover:bg-red-50 hover:text-red-600 border border-[var(--color-fintech-border)]">
+             <LogOut size={18} />
            </Button>
         </div>
-
-        <Button variant="danger" onClick={logout} className="w-full">
-          <LogOut size={18} />
-          <span>Logout</span>
-        </Button>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
-import { Colors, Radii, Shadows } from '../theme/colors';
+import { useTheme } from 'react-native-paper';
+import { Radii, Shadows } from '../theme/colors';
 
 interface GlassCardProps {
   children: React.ReactNode;
@@ -11,7 +12,7 @@ interface GlassCardProps {
 
 /**
  * GlassCard — SplitSmart's signature glassmorphism card component
- * Uses layered semi-transparent backgrounds with violet border glow
+ * Reads from theme colors to support dark/light modes dynamically.
  */
 export const GlassCard: React.FC<GlassCardProps> = ({
   children,
@@ -19,6 +20,42 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   variant = 'default',
   padding = 16,
 }) => {
+  const theme = useTheme();
+  const customColors = (theme.colors as any).custom;
+
+  const styles = StyleSheet.create({
+    base: {
+      borderRadius: Radii.lg,
+      overflow: 'hidden',
+    },
+    cardDefault: {
+      backgroundColor: theme.colors.surface,
+      borderWidth: 1,
+      borderColor: theme.colors.outline,
+      ...Shadows.card,
+      shadowColor: customColors.cardShadow,
+    },
+    cardElevated: {
+      backgroundColor: theme.colors.surface,
+      borderWidth: 1,
+      borderColor: customColors.glassBorder,
+      ...Shadows.glow,
+      shadowColor: theme.colors.primary,
+    },
+    cardOutline: {
+      backgroundColor: 'transparent',
+      borderWidth: 1.5,
+      borderColor: customColors.primaryLight,
+    },
+    cardAccent: {
+      backgroundColor: customColors.glassStrong,
+      borderWidth: 1,
+      borderColor: theme.colors.primary,
+      ...Shadows.glow,
+      shadowColor: theme.colors.primary,
+    },
+  });
+
   const variantStyles = {
     default: styles.cardDefault,
     elevated: styles.cardElevated,
@@ -32,35 +69,5 @@ export const GlassCard: React.FC<GlassCardProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  base: {
-    borderRadius: Radii.lg,
-    overflow: 'hidden',
-  },
-  cardDefault: {
-    backgroundColor: Colors.bgCard,
-    borderWidth: 1,
-    borderColor: Colors.bgCardBorder,
-    ...Shadows.card,
-  },
-  cardElevated: {
-    backgroundColor: Colors.bgCard,
-    borderWidth: 1,
-    borderColor: Colors.glassBorder,
-    ...Shadows.glow,
-  },
-  cardOutline: {
-    backgroundColor: 'transparent',
-    borderWidth: 1.5,
-    borderColor: Colors.primaryLight,
-  },
-  cardAccent: {
-    backgroundColor: Colors.glassStrong,
-    borderWidth: 1,
-    borderColor: Colors.accent,
-    ...Shadows.glow,
-  },
-});
 
 export default GlassCard;

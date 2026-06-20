@@ -2,8 +2,6 @@ import { motion } from 'framer-motion';
 import { Check, ChevronLeft, Receipt, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { THEMES } from '../constants';
-import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
 import { handleSplitwiseCallback } from '../services/api';
 import { getCurrencySymbol } from '../utils/formatters';
@@ -28,8 +26,6 @@ export const SplitwiseGroupSelection = () => {
   const [loading, setLoading] = useState(true);
   const [importing, setImporting] = useState(false);
   const [accessToken, setAccessToken] = useState('');
-  const { style, mode } = useTheme();
-  const isNeo = style === THEMES.NEOBRUTALISM;
 
   useEffect(() => {
     // Get OAuth params from location state (passed from callback)
@@ -108,26 +104,23 @@ export const SplitwiseGroupSelection = () => {
 
   if (loading) {
     return (
-      <div className={`min-h-screen flex items-center justify-center ${isNeo ? 'bg-gray-100' : 'bg-gray-50 dark:bg-gray-900'}`}>
+      <div className="min-h-screen flex items-center justify-center bg-[var(--color-fintech-bg)]">
         <div className="text-center">
-          <div className={`animate-spin rounded-full h-10 w-10 border-2 mx-auto mb-4 ${isNeo ? 'border-black border-t-transparent' : 'border-blue-500 border-t-transparent'}`}></div>
-          <p className={`${isNeo ? 'text-black' : 'text-gray-600 dark:text-gray-400'}`}>Loading groups...</p>
+          <div className="animate-spin rounded-full h-10 w-10 border-2 mx-auto mb-4 border-[var(--color-fintech-primary)] border-t-transparent"></div>
+          <p className="text-[var(--color-fintech-text-muted)] font-medium">Loading groups...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen py-6 px-4 transition-colors duration-300 ${isNeo ? 'bg-gray-100' : 'bg-gray-50 dark:bg-gray-900'}`}>
+    <div className="min-h-screen py-6 px-4 transition-colors duration-300 bg-[var(--color-fintech-bg)] text-[var(--color-fintech-text)]">
       <div className="max-w-3xl mx-auto">
         {/* Back Button */}
         <button
           type="button"
           onClick={() => navigate('/import/splitwise')}
-          className={`flex items-center gap-1 mb-4 text-sm font-medium transition-colors ${isNeo
-            ? 'text-black hover:text-gray-700'
-            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-            }`}
+          className="flex items-center gap-1 mb-4 text-sm font-semibold transition-colors text-[var(--color-fintech-text-muted)] hover:text-[var(--color-fintech-text)]"
         >
           <ChevronLeft className="w-4 h-4" />
           <span>Back</span>
@@ -137,34 +130,27 @@ export const SplitwiseGroupSelection = () => {
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className={`mb-6 ${isNeo
-            ? 'bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 rounded-none'
-            : 'bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6'}`}
+          className="mb-6 bg-[var(--color-fintech-bg-alt)] rounded-3xl shadow-sm border border-[var(--color-fintech-border)] p-6"
         >
-          <h1 className={`text-2xl md:text-3xl font-bold mb-2 ${isNeo ? 'text-black' : 'text-gray-900 dark:text-white'}`}>
+          <h1 className="text-2xl md:text-3xl font-display font-bold mb-2 text-[var(--color-fintech-text)]">
             Select Groups to Import
           </h1>
-          <p className={`text-base ${isNeo ? 'text-black/70' : 'text-gray-600 dark:text-gray-400'}`}>
+          <p className="text-base text-[var(--color-fintech-text-muted)] font-medium">
             Your Splitwise groups are ready. Choose which ones to bring to Splitwiser.
           </p>
         </motion.div>
 
         {/* Selection Controls */}
-        <div className={`${isNeo
-          ? 'bg-white border-2 border-black p-4 mb-4 flex items-center justify-between rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
-          : 'bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-4 flex items-center justify-between'}`}>
-          <div className={`text-sm ${isNeo ? 'text-black' : 'text-gray-600 dark:text-gray-400'}`}>
-            <span className={`font-bold ${isNeo ? 'text-blue-600' : 'text-gray-900 dark:text-white'}`}>
+        <div className="bg-[var(--color-fintech-bg-alt)] rounded-2xl shadow-sm border border-[var(--color-fintech-border)] p-4 mb-4 flex items-center justify-between">
+          <div className="text-sm font-medium text-[var(--color-fintech-text-muted)]">
+            <span className="font-bold text-[var(--color-fintech-primary)]">
               {selectedGroupIds.size}
             </span> of {groups.length} groups selected
           </div>
           <button
             type="button"
             onClick={handleSelectAll}
-            className={`text-sm font-medium transition-colors ${isNeo
-              ? 'text-black hover:text-gray-700'
-              : 'text-blue-500 hover:text-blue-600'
-              }`}
+            className="text-sm font-bold transition-colors text-[var(--color-fintech-primary)] hover:text-[var(--color-fintech-primary-dark)]"
           >
             {selectedGroupIds.size === groups.length ? 'Deselect All' : 'Select All'}
           </button>
@@ -181,31 +167,25 @@ export const SplitwiseGroupSelection = () => {
                 initial={{ x: -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 onClick={() => toggleGroup(group.splitwiseId)}
-                className={`transition-all cursor-pointer p-4 ${isNeo
-                  ? `bg-white border-2 border-black rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] ${isSelected ? 'bg-blue-50' : ''}`
-                  : `bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-md border-2 ${isSelected ? 'border-blue-500' : 'border-transparent'}`
-                  }`}
+                className={`transition-all cursor-pointer p-4 bg-[var(--color-fintech-bg-alt)] rounded-2xl shadow-sm hover:shadow-md border border-[var(--color-fintech-border)] hover:border-[var(--color-fintech-primary)]/50 ${isSelected ? 'ring-2 ring-[var(--color-fintech-primary)]/20 border-[var(--color-fintech-primary)]' : ''}`}
               >
                 <div className="flex items-center gap-4">
                   {/* Checkbox */}
-                  <div className={`flex-shrink-0 w-6 h-6 flex items-center justify-center transition-all ${isSelected
-                    ? (isNeo ? 'bg-black' : 'bg-blue-500')
-                    : 'bg-white'
-                    } ${isNeo ? 'border-2 border-black rounded-none' : 'border-2 border-gray-300 rounded-md'}`}>
+                  <div className={`flex-shrink-0 w-6 h-6 flex items-center justify-center transition-all rounded-full border-2 ${isSelected
+                    ? 'bg-[var(--color-fintech-primary)] border-[var(--color-fintech-primary)]'
+                    : 'bg-[var(--color-fintech-bg-alt)] border-[var(--color-fintech-border)]'
+                    }`}>
                     {isSelected && <Check className="w-4 h-4 text-white stroke-[3]" />}
                   </div>
 
                   {/* Group Image */}
                   <div className="flex-shrink-0">
-                    <div className={`w-12 h-12 flex items-center justify-center font-bold text-lg ${isNeo
-                      ? 'border-2 border-black rounded-none bg-purple-200 text-black'
-                      : 'rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 text-white'
-                      }`}>
+                    <div className="w-12 h-12 flex items-center justify-center font-display font-bold text-lg rounded-xl bg-[var(--color-fintech-primary)]/10 text-[var(--color-fintech-primary)] shadow-sm">
                       {group.imageUrl ? (
                         <img
                           src={group.imageUrl}
                           alt={group.name}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover rounded-xl"
                         />
                       ) : (
                         group.name.charAt(0).toUpperCase()
@@ -215,22 +195,22 @@ export const SplitwiseGroupSelection = () => {
 
                   {/* Group Details */}
                   <div className="flex-1 min-w-0">
-                    <h3 className={`text-lg font-bold mb-1 truncate ${isNeo ? 'text-black' : 'text-gray-900 dark:text-white'}`}>
+                    <h3 className="text-lg font-display font-bold mb-1 truncate text-[var(--color-fintech-text)]">
                       {group.name}
                     </h3>
 
                     <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
-                      <div className={`flex items-center gap-1 ${isNeo ? 'text-black/60' : 'text-gray-500 dark:text-gray-400'}`}>
-                        <Users className="w-4 h-4" />
+                      <div className="flex items-center gap-1 font-medium text-[var(--color-fintech-text-muted)]">
+                        <Users className="w-4 h-4 opacity-70" />
                         <span>{group.memberCount} members</span>
                       </div>
 
-                      <div className={`flex items-center gap-1 ${isNeo ? 'text-black/60' : 'text-gray-500 dark:text-gray-400'}`}>
-                        <Receipt className="w-4 h-4" />
+                      <div className="flex items-center gap-1 font-medium text-[var(--color-fintech-text-muted)]">
+                        <Receipt className="w-4 h-4 opacity-70" />
                         <span>{group.expenseCount} expenses</span>
                       </div>
 
-                      <div className={`flex items-center gap-1 font-bold ${isNeo ? 'text-blue-600' : 'text-gray-900 dark:text-white'}`}>
+                      <div className="flex items-center gap-1 font-bold text-[var(--color-fintech-primary)]">
                         <span>{getCurrencySymbol(group.currency)}</span>
                         <span>
                           {new Intl.NumberFormat(undefined, {
@@ -251,22 +231,17 @@ export const SplitwiseGroupSelection = () => {
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className={`${isNeo
-            ? 'bg-white border-2 border-black p-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'
-            : 'bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6'}`}
+          className="bg-[var(--color-fintech-bg-alt)] rounded-3xl shadow-sm border border-[var(--color-fintech-border)] p-6"
         >
           <button
             type="button"
             onClick={handleStartImport}
             disabled={importing || selectedGroupIds.size === 0}
-            className={`w-full py-4 px-6 flex items-center justify-center gap-3 transition-all ${isNeo
-              ? 'bg-blue-500 border-2 border-black text-white font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] rounded-none'
-              : 'bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl'
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
+            className="w-full py-4 px-6 flex items-center justify-center gap-3 transition-all bg-[var(--color-fintech-primary)] hover:bg-[var(--color-fintech-primary-dark)] text-white font-bold rounded-xl shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {importing ? (
               <>
-                <div className={`animate-spin rounded-full h-5 w-5 border-2 ${isNeo ? 'border-white border-t-transparent' : 'border-white border-t-transparent'}`}></div>
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
                 <span>Importing...</span>
               </>
             ) : (
@@ -277,7 +252,7 @@ export const SplitwiseGroupSelection = () => {
           </button>
 
           {selectedGroupIds.size === 0 && (
-            <p className={`text-center text-sm mt-3 ${isNeo ? 'text-black/60' : 'text-gray-500'}`}>
+            <p className="text-center text-sm font-medium mt-3 text-[var(--color-fintech-text-muted)]">
               Select at least one group to proceed
             </p>
           )}

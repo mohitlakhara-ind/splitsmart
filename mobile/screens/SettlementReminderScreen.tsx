@@ -8,12 +8,9 @@ import {
   Share,
   Alert,
 } from 'react-native';
-import { Colors, Typography, Spacing, Radii, Shadows } from '../theme/colors';
+import { useTheme } from 'react-native-paper';
+import { Typography, Spacing, Radii, Shadows } from '../theme/colors';
 import GlassCard from '../components/GlassCard';
-
-// Feature: WhatsApp/SMS Settlement Reminder
-// Generates pre-formatted messages and shares via native Share sheet
-// Works on both iOS and Android, no external API needed
 
 interface Debt {
   fromName: string;
@@ -56,6 +53,9 @@ const SettlementReminderScreen: React.FC<SettlementReminderScreenProps> = ({
   navigation,
   route,
 }) => {
+  const theme = useTheme();
+  const customColors = (theme.colors as any).custom;
+
   const debts = route?.params?.debts || MOCK_DEBTS;
   const totalOwed = debts.reduce((sum, d) => sum + d.amount, 0);
 
@@ -96,14 +96,249 @@ const SettlementReminderScreen: React.FC<SettlementReminderScreenProps> = ({
   };
 
   const copyToClipboard = (debt: Debt) => {
-    // In real app: Clipboard.setString(generateWhatsAppMessage(debt))
     Alert.alert('Copied!', 'Message copied to clipboard');
   };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+      paddingHorizontal: Spacing.md,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingTop: 60,
+      paddingBottom: Spacing.md,
+    },
+    backBtn: {
+      width: 44,
+      height: 44,
+      borderRadius: Radii.full,
+      backgroundColor: customColors.glass,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 1,
+      borderColor: customColors.glassBorder,
+    },
+    backIcon: { fontSize: 20, color: theme.colors.onBackground },
+    title: {
+      fontSize: Typography.sizes.xl,
+      fontFamily: Typography.fontFamily.bold,
+      color: theme.colors.onBackground,
+      fontWeight: '700',
+    },
+    summaryCard: {
+      marginBottom: Spacing.lg,
+    },
+    summaryRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      marginBottom: 8,
+    },
+    summaryLabel: {
+      fontSize: Typography.sizes.xs,
+      color: customColors.textMuted,
+      fontFamily: Typography.fontFamily.medium,
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+    },
+    summaryAmount: {
+      fontSize: Typography.sizes.xxl,
+      fontFamily: Typography.fontFamily.bold,
+      color: theme.colors.onSurface,
+      marginTop: 2,
+    },
+    summaryEmoji: { fontSize: 36 },
+    summarySubtitle: {
+      fontSize: Typography.sizes.sm,
+      color: customColors.textSecondary,
+      fontFamily: Typography.fontFamily.regular,
+      marginBottom: Spacing.md,
+    },
+    bulkShareBtn: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: theme.colors.primary,
+      borderRadius: Radii.md,
+      paddingVertical: 12,
+      gap: 8,
+      ...Shadows.fab,
+      shadowColor: theme.colors.primary,
+    },
+    bulkShareIcon: { fontSize: 18 },
+    bulkShareText: {
+      fontSize: Typography.sizes.md,
+      color: '#FFFFFF',
+      fontFamily: Typography.fontFamily.semiBold,
+      fontWeight: '700',
+    },
+    sectionTitle: {
+      fontSize: Typography.sizes.md,
+      fontFamily: Typography.fontFamily.semiBold,
+      color: theme.colors.onBackground,
+      marginBottom: Spacing.sm,
+      fontWeight: '700',
+    },
+    debtCard: {
+      marginBottom: Spacing.md,
+      gap: Spacing.sm,
+    },
+    debtHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    avatarRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Spacing.sm,
+    },
+    avatar: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      backgroundColor: customColors.glassStrong,
+      borderWidth: 2,
+      borderColor: customColors.primaryLight,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    avatarText: {
+      fontSize: Typography.sizes.md,
+      color: theme.colors.primary,
+      fontFamily: Typography.fontFamily.bold,
+      fontWeight: '700',
+    },
+    debtPersonName: {
+      fontSize: Typography.sizes.md,
+      color: theme.colors.onSurface,
+      fontFamily: Typography.fontFamily.semiBold,
+      fontWeight: '600',
+    },
+    debtGroup: {
+      fontSize: Typography.sizes.xs,
+      color: customColors.textMuted,
+      fontFamily: Typography.fontFamily.regular,
+    },
+    debtAmountBadge: {
+      backgroundColor: 'rgba(239,63,94,0.12)',
+      borderRadius: Radii.md,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderWidth: 1,
+      borderColor: customColors.negative,
+    },
+    debtAmountText: {
+      fontSize: Typography.sizes.md,
+      color: customColors.negative,
+      fontFamily: Typography.fontFamily.bold,
+      fontWeight: '700',
+    },
+    expenseList: {
+      gap: 4,
+      paddingLeft: 4,
+      borderLeftWidth: 2,
+      borderLeftColor: theme.colors.outline,
+      paddingVertical: 4,
+      marginLeft: 4,
+    },
+    expenseRow: {
+      flexDirection: 'row',
+      gap: 6,
+      alignItems: 'center',
+    },
+    expenseDot: {
+      color: theme.colors.primary,
+      fontSize: 10,
+    },
+    expenseName: {
+      fontSize: Typography.sizes.sm,
+      color: customColors.textSecondary,
+      fontFamily: Typography.fontFamily.regular,
+    },
+    messagePreview: {
+      backgroundColor: theme.colors.surfaceVariant,
+      borderRadius: Radii.md,
+      padding: Spacing.sm,
+      borderWidth: 1,
+      borderColor: theme.colors.outline,
+    },
+    previewLabel: {
+      fontSize: Typography.sizes.xs,
+      color: customColors.textMuted,
+      fontFamily: Typography.fontFamily.medium,
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+      marginBottom: 6,
+    },
+    previewText: {
+      fontSize: Typography.sizes.xs,
+      color: customColors.textSecondary,
+      fontFamily: Typography.fontFamily.regular,
+      lineHeight: 16,
+    },
+    actionRow: {
+      flexDirection: 'row',
+      gap: Spacing.sm,
+    },
+    copyBtn: {
+      paddingHorizontal: Spacing.md,
+      paddingVertical: 10,
+      backgroundColor: customColors.glass,
+      borderRadius: Radii.md,
+      borderWidth: 1,
+      borderColor: theme.colors.outline,
+    },
+    copyBtnText: {
+      fontSize: Typography.sizes.sm,
+      color: customColors.textSecondary,
+      fontFamily: Typography.fontFamily.medium,
+    },
+    shareBtn: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: customColors.accentLight,
+      borderRadius: Radii.md,
+      paddingVertical: 10,
+      gap: 6,
+      ...Shadows.glow,
+      shadowColor: customColors.accentLight,
+    },
+    shareBtnIcon: { fontSize: 16 },
+    shareBtnText: {
+      fontSize: Typography.sizes.sm,
+      color: '#FFFFFF',
+      fontFamily: Typography.fontFamily.semiBold,
+      fontWeight: '600',
+    },
+    tipCard: {
+      marginTop: Spacing.sm,
+      gap: 6,
+    },
+    tipTitle: {
+      fontSize: Typography.sizes.sm,
+      color: theme.colors.onSurface,
+      fontFamily: Typography.fontFamily.semiBold,
+      marginBottom: 4,
+      fontWeight: '600',
+    },
+    tipText: {
+      fontSize: Typography.sizes.xs,
+      color: customColors.textMuted,
+      fontFamily: Typography.fontFamily.regular,
+      lineHeight: 18,
+    },
+  });
 
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
             <Text style={styles.backIcon}>←</Text>
@@ -112,7 +347,6 @@ const SettlementReminderScreen: React.FC<SettlementReminderScreenProps> = ({
           <View style={{ width: 44 }} />
         </View>
 
-        {/* Summary Banner */}
         <GlassCard style={styles.summaryCard} variant="accent">
           <View style={styles.summaryRow}>
             <View>
@@ -124,18 +358,15 @@ const SettlementReminderScreen: React.FC<SettlementReminderScreenProps> = ({
           <Text style={styles.summarySubtitle}>
             {debts.length} {debts.length === 1 ? 'person owes' : 'people owe'} you money
           </Text>
-          {/* Bulk share button */}
           <TouchableOpacity style={styles.bulkShareBtn} onPress={shareBulkReminder}>
             <Text style={styles.bulkShareIcon}>📤</Text>
             <Text style={styles.bulkShareText}>Share All Reminders</Text>
           </TouchableOpacity>
         </GlassCard>
 
-        {/* Individual Debt Cards */}
         <Text style={styles.sectionTitle}>Individual Reminders</Text>
         {debts.map((debt, idx) => (
           <GlassCard key={idx} style={styles.debtCard} variant="default">
-            {/* Person Info */}
             <View style={styles.debtHeader}>
               <View style={styles.avatarRow}>
                 <View style={styles.avatar}>
@@ -155,7 +386,6 @@ const SettlementReminderScreen: React.FC<SettlementReminderScreenProps> = ({
               </View>
             </View>
 
-            {/* Expense List */}
             <View style={styles.expenseList}>
               {debt.expenses.map((exp, i) => (
                 <View key={i} style={styles.expenseRow}>
@@ -165,7 +395,6 @@ const SettlementReminderScreen: React.FC<SettlementReminderScreenProps> = ({
               ))}
             </View>
 
-            {/* Message Preview */}
             <View style={styles.messagePreview}>
               <Text style={styles.previewLabel}>Message Preview</Text>
               <Text style={styles.previewText} numberOfLines={4}>
@@ -173,7 +402,6 @@ const SettlementReminderScreen: React.FC<SettlementReminderScreenProps> = ({
               </Text>
             </View>
 
-            {/* Action Buttons */}
             <View style={styles.actionRow}>
               <TouchableOpacity
                 style={styles.copyBtn}
@@ -192,7 +420,6 @@ const SettlementReminderScreen: React.FC<SettlementReminderScreenProps> = ({
           </GlassCard>
         ))}
 
-        {/* UPI Quick Pay Note */}
         <GlassCard style={styles.tipCard} padding={12}>
           <Text style={styles.tipTitle}>💡 Quick Settle Tips</Text>
           <Text style={styles.tipText}>
@@ -202,237 +429,10 @@ const SettlementReminderScreen: React.FC<SettlementReminderScreenProps> = ({
           </Text>
         </GlassCard>
 
-        <View style={{ height: 80 }} />
+        <View style={{ height: 120 }} />
       </ScrollView>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.bg,
-    paddingHorizontal: Spacing.md,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 60,
-    paddingBottom: Spacing.md,
-  },
-  backBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: Radii.full,
-    backgroundColor: Colors.glass,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: Colors.glassBorder,
-  },
-  backIcon: { fontSize: 20, color: Colors.textPrimary },
-  title: {
-    fontSize: Typography.sizes.xl,
-    fontFamily: Typography.fontFamily.bold,
-    color: Colors.textPrimary,
-  },
-  summaryCard: {
-    marginBottom: Spacing.lg,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 8,
-  },
-  summaryLabel: {
-    fontSize: Typography.sizes.xs,
-    color: Colors.textMuted,
-    fontFamily: Typography.fontFamily.medium,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  summaryAmount: {
-    fontSize: Typography.sizes.xxl,
-    fontFamily: Typography.fontFamily.bold,
-    color: Colors.textPrimary,
-    marginTop: 2,
-  },
-  summaryEmoji: { fontSize: 36 },
-  summarySubtitle: {
-    fontSize: Typography.sizes.sm,
-    color: Colors.textSecondary,
-    fontFamily: Typography.fontFamily.regular,
-    marginBottom: Spacing.md,
-  },
-  bulkShareBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.primary,
-    borderRadius: Radii.md,
-    paddingVertical: 12,
-    gap: 8,
-    ...Shadows.fab,
-  },
-  bulkShareIcon: { fontSize: 18 },
-  bulkShareText: {
-    fontSize: Typography.sizes.md,
-    color: Colors.textPrimary,
-    fontFamily: Typography.fontFamily.semiBold,
-  },
-  sectionTitle: {
-    fontSize: Typography.sizes.md,
-    fontFamily: Typography.fontFamily.semiBold,
-    color: Colors.textPrimary,
-    marginBottom: Spacing.sm,
-  },
-  debtCard: {
-    marginBottom: Spacing.md,
-    gap: Spacing.sm,
-  },
-  debtHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  avatarRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: Colors.glassStrong,
-    borderWidth: 2,
-    borderColor: Colors.primaryLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: {
-    fontSize: Typography.sizes.md,
-    color: Colors.primaryLight,
-    fontFamily: Typography.fontFamily.bold,
-  },
-  debtPersonName: {
-    fontSize: Typography.sizes.md,
-    color: Colors.textPrimary,
-    fontFamily: Typography.fontFamily.semiBold,
-  },
-  debtGroup: {
-    fontSize: Typography.sizes.xs,
-    color: Colors.textMuted,
-    fontFamily: Typography.fontFamily.regular,
-  },
-  debtAmountBadge: {
-    backgroundColor: 'rgba(244,63,94,0.15)',
-    borderRadius: Radii.md,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderWidth: 1,
-    borderColor: Colors.negative,
-  },
-  debtAmountText: {
-    fontSize: Typography.sizes.md,
-    color: Colors.negative,
-    fontFamily: Typography.fontFamily.bold,
-  },
-  expenseList: {
-    gap: 4,
-    paddingLeft: 4,
-    borderLeftWidth: 2,
-    borderLeftColor: Colors.bgCardBorder,
-    paddingVertical: 4,
-    marginLeft: 4,
-  },
-  expenseRow: {
-    flexDirection: 'row',
-    gap: 6,
-    alignItems: 'center',
-  },
-  expenseDot: {
-    color: Colors.accent,
-    fontSize: 10,
-  },
-  expenseName: {
-    fontSize: Typography.sizes.sm,
-    color: Colors.textSecondary,
-    fontFamily: Typography.fontFamily.regular,
-  },
-  messagePreview: {
-    backgroundColor: Colors.bgInput,
-    borderRadius: Radii.md,
-    padding: Spacing.sm,
-    borderWidth: 1,
-    borderColor: Colors.glassBorder,
-  },
-  previewLabel: {
-    fontSize: Typography.sizes.xs,
-    color: Colors.textMuted,
-    fontFamily: Typography.fontFamily.medium,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 6,
-  },
-  previewText: {
-    fontSize: Typography.sizes.xs,
-    color: Colors.textSecondary,
-    fontFamily: Typography.fontFamily.regular,
-    lineHeight: 16,
-  },
-  actionRow: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-  },
-  copyBtn: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: 10,
-    backgroundColor: Colors.glass,
-    borderRadius: Radii.md,
-    borderWidth: 1,
-    borderColor: Colors.glassBorder,
-  },
-  copyBtnText: {
-    fontSize: Typography.sizes.sm,
-    color: Colors.textSecondary,
-    fontFamily: Typography.fontFamily.medium,
-  },
-  shareBtn: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.accent,
-    borderRadius: Radii.md,
-    paddingVertical: 10,
-    gap: 6,
-    ...Shadows.glow,
-  },
-  shareBtnIcon: { fontSize: 16 },
-  shareBtnText: {
-    fontSize: Typography.sizes.sm,
-    color: Colors.textInverse,
-    fontFamily: Typography.fontFamily.semiBold,
-  },
-  tipCard: {
-    marginTop: Spacing.sm,
-    gap: 6,
-  },
-  tipTitle: {
-    fontSize: Typography.sizes.sm,
-    color: Colors.textSecondary,
-    fontFamily: Typography.fontFamily.semiBold,
-    marginBottom: 4,
-  },
-  tipText: {
-    fontSize: Typography.sizes.xs,
-    color: Colors.textMuted,
-    fontFamily: Typography.fontFamily.regular,
-    lineHeight: 18,
-  },
-});
 
 export default SettlementReminderScreen;

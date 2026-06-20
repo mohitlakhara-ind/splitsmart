@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Alert, FlatList, RefreshControl, StyleSheet, View } from "react-native";
+import { Alert, FlatList, RefreshControl, StyleSheet, View, Share } from "react-native";
 import {
   ActivityIndicator,
   Appbar,
@@ -17,10 +17,13 @@ import * as Haptics from "expo-haptics";
 import { createGroup, getGroups, getOptimizedSettlements } from "../api/groups";
 import { AuthContext } from "../context/AuthContext";
 import { formatCurrency, getCurrencySymbol } from "../utils/currency";
+import { Spacing, Radii, Shadows } from "../theme/colors";
 
 const HomeScreen = ({ navigation }) => {
-  const { token, logout, user } = useContext(AuthContext);
   const theme = useTheme();
+  const customColors = theme.colors.custom;
+  const { token, logout, user } = useContext(AuthContext);
+  
   const [groups, setGroups] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -120,10 +123,32 @@ const HomeScreen = ({ navigation }) => {
     }
     setIsCreatingGroup(true);
     try {
-      await createGroup(newGroupName);
+      const response = await createGroup(newGroupName);
+      const newGroup = response.data;
       hideModal();
       setNewGroupName("");
-      await fetchGroups(); // Refresh the groups list
+      await fetchGroups(false); // Refresh the groups list without loader
+      
+      // Native invite link / code sharing prompt
+      Alert.alert(
+        "Group Created! 🎉",
+        `Your group "${newGroup.name}" has been created.\n\nShare this Join Code with your friends so they can join:\n👉 ${newGroup.joinCode}`,
+        [
+          { text: "Later", style: "cancel" },
+          {
+            text: "Invite Friends",
+            onPress: async () => {
+              try {
+                await Share.share({
+                  message: `Join my group "${newGroup.name}" on SplitSmart!\nUse this Join Code to join: ${newGroup.joinCode}`,
+                });
+              } catch (shareErr) {
+                console.error("Failed to open share sheet:", shareErr);
+              }
+            }
+          }
+        ]
+      );
     } catch (error) {
       console.error("Failed to create group:", error);
       Alert.alert("Error", "Failed to create group.");
@@ -133,6 +158,72 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const currencySymbol = getCurrencySymbol();
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    loaderContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: theme.colors.background,
+    },
+    list: {
+      padding: Spacing.md,
+      paddingBottom: 140, // Prevent floating tab bar overlap
+    },
+    card: {
+      marginBottom: Spacing.md,
+      backgroundColor: theme.colors.surface,
+      borderWidth: 1,
+      borderColor: theme.colors.outline,
+      borderRadius: Radii.lg,
+      elevation: 2,
+      shadowColor: customColors.cardShadow,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: theme.dark ? 0.3 : 0.06,
+      shadowRadius: 8,
+    },
+    settlementStatus: {
+      fontWeight: "700",
+      marginTop: Spacing.xs,
+      fontSize: 14,
+    },
+    emptyText: {
+      textAlign: "center",
+      marginTop: 60,
+      color: customColors.textMuted,
+      fontSize: 16,
+      fontWeight: "500",
+    },
+    modalContainer: {
+      backgroundColor: theme.colors.surface,
+      padding: 24,
+      margin: 20,
+      borderRadius: Radii.xl,
+      borderWidth: 1,
+      borderColor: theme.colors.outline,
+      ...Shadows.card,
+      shadowColor: customColors.cardShadow,
+    },
+    modalTitle: {
+      fontSize: 22,
+      fontWeight: 'bold',
+      marginBottom: 20,
+      textAlign: "center",
+      color: theme.colors.onSurface,
+    },
+    input: {
+      marginBottom: 20,
+      backgroundColor: theme.colors.background,
+    },
+    btnCreate: {
+      borderRadius: Radii.md,
+      paddingVertical: 6,
+    }
+  });
 
   const renderGroup = ({ item }) => {
     const settlementStatus = groupSettlements[item._id];
@@ -144,38 +235,38 @@ const HomeScreen = ({ navigation }) => {
       }
 
       if (settlementStatus.isSettled) {
-        return "✓ You are settled up.";
+        return "✓ You are settled up";
       }
 
       if (settlementStatus.netBalance > 0) {
-        return `You are owed ${formatCurrency(settlementStatus.netBalance)}.`;
+        return `You are owed ${formatCurrency(settlementStatus.netBalance)}`;
       } else if (settlementStatus.netBalance < 0) {
         return `You owe ${formatCurrency(
           Math.abs(settlementStatus.netBalance)
-        )}.`;
+        )}`;
       }
 
-      return "You are settled up.";
+      return "✓ You are settled up";
     };
 
     // Get text color based on settlement status
     const getStatusColor = () => {
       if (!settlementStatus || settlementStatus.isSettled) {
-        return "#4CAF50"; // Green for settled
+        return customColors.positive;
       }
 
       if (settlementStatus.netBalance > 0) {
-        return "#4CAF50"; // Green for being owed money
+        return customColors.positive;
       } else if (settlementStatus.netBalance < 0) {
-        return "#F44336"; // Red for owing money
+        return customColors.negative;
       }
 
-      return "#4CAF50"; // Default green
+      return customColors.positive;
     };
 
     const isImage =
       item.imageUrl && /^(https?:|data:image)/.test(item.imageUrl);
-    const groupIcon = item.imageUrl || item.name?.charAt(0) || "?";
+    const groupIcon = item.name?.charAt(0) || "?";
     return (
       <HapticCard
         style={styles.card}
@@ -192,15 +283,22 @@ const HomeScreen = ({ navigation }) => {
       >
         <HapticCard.Title
           title={item.name}
+          titleStyle={{ color: theme.colors.onSurface, fontWeight: '700', fontSize: 18 }}
           left={(props) =>
             isImage ? (
-              <Avatar.Image {...props} source={{ uri: item.imageUrl }} />
+              <Avatar.Image {...props} size={42} source={{ uri: item.imageUrl }} />
             ) : (
-              <Avatar.Text {...props} label={groupIcon} />
+              <Avatar.Text 
+                {...props} 
+                size={42}
+                label={groupIcon} 
+                style={{ backgroundColor: customColors.glassStrong }}
+                labelStyle={{ color: theme.colors.primary, fontWeight: '700' }}
+              />
             )
           }
         />
-        <HapticCard.Content>
+        <HapticCard.Content style={{ paddingTop: 0, marginTop: -4 }}>
           <Text style={[styles.settlementStatus, { color: getStatusColor() }]}>
             {getSettlementStatusText()}
           </Text>
@@ -223,6 +321,9 @@ const HomeScreen = ({ navigation }) => {
             value={newGroupName}
             onChangeText={setNewGroupName}
             style={styles.input}
+            mode="outlined"
+            activeOutlineColor={theme.colors.primary}
+            outlineColor={theme.colors.outline}
             accessibilityLabel="New group name"
           />
           <HapticButton
@@ -230,6 +331,7 @@ const HomeScreen = ({ navigation }) => {
             onPress={handleCreateGroup}
             loading={isCreatingGroup}
             disabled={isCreatingGroup}
+            style={styles.btnCreate}
             accessibilityLabel="Create Group"
             accessibilityRole="button"
           >
@@ -238,11 +340,12 @@ const HomeScreen = ({ navigation }) => {
         </Modal>
       </Portal>
 
-      <Appbar.Header>
-        <Appbar.Content title="Your Groups" />
+      <Appbar.Header style={{ backgroundColor: theme.colors.surface }}>
+        <Appbar.Content title="Your Groups" titleStyle={{ fontWeight: 'bold', color: theme.colors.onSurface }} />
         <HapticAppbarAction
           icon="plus"
           onPress={showModal}
+          color={theme.colors.onSurface}
           accessibilityLabel="Create new group"
           accessibilityRole="button"
         />
@@ -251,6 +354,7 @@ const HomeScreen = ({ navigation }) => {
           onPress={() =>
             navigation.navigate("JoinGroup", { onGroupJoined: fetchGroups })
           }
+          color={theme.colors.onSurface}
           accessibilityLabel="Join a group"
           accessibilityRole="button"
         />
@@ -284,44 +388,5 @@ const HomeScreen = ({ navigation }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  loaderContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  list: {
-    padding: 16,
-  },
-  card: {
-    marginBottom: 16,
-  },
-  settlementStatus: {
-    fontWeight: "500",
-    marginTop: 4,
-  },
-  emptyText: {
-    textAlign: "center",
-    marginTop: 20,
-  },
-  modalContainer: {
-    backgroundColor: "white",
-    padding: 20,
-    margin: 20,
-    borderRadius: 8,
-  },
-  modalTitle: {
-    fontSize: 20,
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  input: {
-    marginBottom: 20,
-  },
-});
 
 export default HomeScreen;

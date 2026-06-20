@@ -5,6 +5,7 @@ import {
   Platform,
   StyleSheet,
   View,
+  ScrollView,
 } from "react-native";
 import {
   ActivityIndicator,
@@ -12,6 +13,7 @@ import {
   Text,
   TextInput,
   Title,
+  useTheme,
 } from "react-native-paper";
 import HapticButton from '../components/ui/HapticButton';
 import HapticCheckboxItem from '../components/ui/HapticCheckbox';
@@ -19,61 +21,58 @@ import HapticMenu from '../components/ui/HapticMenu';
 import HapticSegmentedButtons from '../components/ui/HapticSegmentedButtons';
 import { createExpense, getGroupMembers } from "../api/groups";
 import { AuthContext } from "../context/AuthContext";
+import { Spacing, Radii } from "../theme/colors";
 
 const AddExpenseScreen = ({ route, navigation }) => {
   const { groupId } = route.params;
   const { token, user } = useContext(AuthContext);
+  const theme = useTheme();
+  const customColors = theme.colors.custom;
+
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [members, setMembers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [splitMethod, setSplitMethod] = useState("equal");
-  const [payerId, setPayerId] = useState(null); // Initialize as null until members are loaded
+  const [payerId, setPayerId] = useState(null); 
   const [menuVisible, setMenuVisible] = useState(false);
 
-  // State for different split methods
   const [percentages, setPercentages] = useState({});
   const [shares, setShares] = useState({});
   const [exactAmounts, setExactAmounts] = useState({});
-  const [selectedMembers, setSelectedMembers] = useState({}); // For equal split
+  const [selectedMembers, setSelectedMembers] = useState({}); 
 
   useEffect(() => {
     const fetchMembers = async () => {
       try {
         const response = await getGroupMembers(groupId);
         setMembers(response.data);
-        // Initialize split states
         const initialShares = {};
         const initialPercentages = {};
         const initialExactAmounts = {};
         const initialSelectedMembers = {};
         const numMembers = response.data.length;
 
-        // Calculate percentages using integer math to avoid floating-point errors
         const basePercentage = Math.floor(100 / numMembers);
         const remainder = 100 - basePercentage * numMembers;
 
         response.data.forEach((member, index) => {
           initialShares[member.userId] = "1";
 
-          // Distribute percentages using integer math
           let memberPercentage = basePercentage;
-          // Distribute remainder to first members (could also be last, but first is simpler)
           if (index < remainder) {
             memberPercentage += 1;
           }
           initialPercentages[member.userId] = memberPercentage.toString();
-
           initialExactAmounts[member.userId] = "0.00";
-          initialSelectedMembers[member.userId] = true; // Select all by default
+          initialSelectedMembers[member.userId] = true; 
         });
         setShares(initialShares);
         setPercentages(initialPercentages);
         setExactAmounts(initialExactAmounts);
         setSelectedMembers(initialSelectedMembers);
 
-        // Set default payer to current user if they're a member
         const currentUserMember = response.data.find(
           (member) => member.userId === user._id
         );
@@ -93,6 +92,13 @@ const AddExpenseScreen = ({ route, navigation }) => {
       fetchMembers();
     }
   }, [token, groupId]);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerStyle: { backgroundColor: theme.colors.surface },
+      headerTintColor: theme.colors.onSurface,
+    });
+  }, [navigation, theme]);
 
   const handleAddExpense = async () => {
     if (!description || !amount) {
@@ -125,14 +131,13 @@ const AddExpenseScreen = ({ route, navigation }) => {
         }
         const splitAmount =
           Math.round((numericAmount / includedMembers.length) * 100) / 100;
-        // Calculate remainder to handle rounding
         const totalSplitAmount = splitAmount * includedMembers.length;
         const remainder =
           Math.round((numericAmount - totalSplitAmount) * 100) / 100;
 
         splits = includedMembers.map((userId, index) => ({
           userId,
-          amount: index === 0 ? splitAmount + remainder : splitAmount, // Add remainder to first member
+          amount: index === 0 ? splitAmount + remainder : splitAmount, 
           type: "equal",
         }));
         splitType = "equal";
@@ -155,7 +160,7 @@ const AddExpenseScreen = ({ route, navigation }) => {
             amount: Math.round(parseFloat(value) * 100) / 100,
             type: "unequal",
           }));
-        splitType = "unequal"; // Backend uses 'unequal' for exact amounts
+        splitType = "unequal"; 
       } else if (splitMethod === "percentage") {
         const total = Object.values(percentages).reduce(
           (sum, val) => sum + parseFloat(val || "0"),
@@ -190,7 +195,6 @@ const AddExpenseScreen = ({ route, navigation }) => {
           throw new Error("Total shares cannot be zero.");
         }
 
-        // Calculate amounts with proper rounding
         const amounts = nonZeroShares.map(([userId, value]) => {
           const shareRatio = parseInt(value, 10) / totalShares;
           return {
@@ -200,7 +204,6 @@ const AddExpenseScreen = ({ route, navigation }) => {
           };
         });
 
-        // Adjust for rounding errors
         const totalCalculated = amounts.reduce(
           (sum, item) => sum + item.amount,
           0
@@ -214,13 +217,13 @@ const AddExpenseScreen = ({ route, navigation }) => {
         }
 
         splits = amounts;
-        splitType = "unequal"; // Backend uses 'unequal' for shares
+        splitType = "unequal"; 
       }
 
       expenseData = {
         description,
         amount: numericAmount,
-        paidBy: payerId, // Use the selected payer
+        paidBy: payerId, 
         splitType,
         splits,
         tags: [],
@@ -240,7 +243,6 @@ const AddExpenseScreen = ({ route, navigation }) => {
     setSelectedMembers((prev) => ({ ...prev, [userId]: !prev[userId] }));
   };
 
-  // Helper function to auto-balance percentages
   const balancePercentages = (updatedPercentages) => {
     const total = Object.values(updatedPercentages).reduce(
       (sum, val) => sum + parseFloat(val || "0"),
@@ -249,7 +251,6 @@ const AddExpenseScreen = ({ route, navigation }) => {
     const memberIds = Object.keys(updatedPercentages);
 
     if (total !== 100 && memberIds.length > 1) {
-      // Find the last non-zero percentage to adjust
       const lastMemberId = memberIds[memberIds.length - 1];
       const otherTotal = Object.entries(updatedPercentages)
         .filter(([id]) => id !== lastMemberId)
@@ -262,10 +263,62 @@ const AddExpenseScreen = ({ route, navigation }) => {
     return updatedPercentages;
   };
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    scrollContent: {
+      padding: Spacing.md,
+      paddingBottom: 140,
+    },
+    loaderContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: theme.colors.background,
+    },
+    input: {
+      marginBottom: 16,
+      backgroundColor: theme.colors.surface,
+    },
+    button: {
+      marginTop: 24,
+      borderRadius: Radii.md,
+      paddingVertical: 4,
+    },
+    splitTitle: {
+      marginTop: 16,
+      marginBottom: 8,
+      fontWeight: 'bold',
+      color: theme.colors.onBackground,
+    },
+    splitInputsContainer: {
+      marginTop: 8,
+    },
+    splitInput: {
+      marginBottom: 12,
+      backgroundColor: theme.colors.surface,
+    },
+    helperText: {
+      fontSize: 12,
+      marginBottom: 8,
+      color: customColors.textSecondary,
+    },
+    totalText: {
+      fontWeight: "bold",
+      color: theme.colors.primary,
+    },
+    pickerButton: {
+      marginBottom: 16,
+      borderColor: theme.colors.outline,
+      borderRadius: Radii.sm,
+    }
+  });
+
   const renderSplitInputs = () => {
     const handleSplitChange = (setter, userId, value) => {
       if (setter === setPercentages) {
-        // Auto-balance percentages when one changes
         const updatedPercentages = { ...percentages, [userId]: value };
         const balanced = balancePercentages(updatedPercentages);
         setter(balanced);
@@ -293,13 +346,16 @@ const AddExpenseScreen = ({ route, navigation }) => {
         return members.map((member) => (
           <TextInput
             key={member.userId}
-            label={`${member.user.name}'s exact amount`}
+            label={`${member.user.name}'s exact amount (₹)`}
             value={exactAmounts[member.userId]}
             onChangeText={(text) =>
               handleSplitChange(setExactAmounts, member.userId, text)
             }
             keyboardType="numeric"
             style={styles.splitInput}
+            mode="outlined"
+            activeOutlineColor={theme.colors.primary}
+            outlineColor={theme.colors.outline}
             accessibilityLabel={`${member.user.name}'s exact amount`}
           />
         ));
@@ -307,13 +363,16 @@ const AddExpenseScreen = ({ route, navigation }) => {
         return members.map((member) => (
           <TextInput
             key={member.userId}
-            label={`${member.user.name}'s percentage`}
+            label={`${member.user.name}'s percentage (%)`}
             value={percentages[member.userId]}
             onChangeText={(text) =>
               handleSplitChange(setPercentages, member.userId, text)
             }
             keyboardType="numeric"
             style={styles.splitInput}
+            mode="outlined"
+            activeOutlineColor={theme.colors.primary}
+            outlineColor={theme.colors.outline}
             accessibilityLabel={`${member.user.name}'s percentage`}
           />
         ));
@@ -328,6 +387,9 @@ const AddExpenseScreen = ({ route, navigation }) => {
             }
             keyboardType="numeric"
             style={styles.splitInput}
+            mode="outlined"
+            activeOutlineColor={theme.colors.primary}
+            outlineColor={theme.colors.outline}
             accessibilityLabel={`${member.user.name}'s shares`}
           />
         ));
@@ -353,20 +415,26 @@ const AddExpenseScreen = ({ route, navigation }) => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <View style={styles.content}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         <TextInput
           label="Description"
           value={description}
           onChangeText={setDescription}
           style={styles.input}
+          mode="outlined"
+          activeOutlineColor={theme.colors.primary}
+          outlineColor={theme.colors.outline}
           accessibilityLabel="Expense Description"
         />
         <TextInput
-          label="Amount"
+          label="Amount (₹)"
           value={amount}
           onChangeText={setAmount}
           style={styles.input}
           keyboardType="numeric"
+          mode="outlined"
+          activeOutlineColor={theme.colors.primary}
+          outlineColor={theme.colors.outline}
           accessibilityLabel="Expense Amount"
         />
 
@@ -375,7 +443,9 @@ const AddExpenseScreen = ({ route, navigation }) => {
           onDismiss={() => setMenuVisible(false)}
           anchor={
             <HapticButton
+              mode="outlined"
               onPress={() => setMenuVisible(true)}
+              style={styles.pickerButton}
               accessibilityLabel={`Paid by ${selectedPayerName}`}
               accessibilityRole="button"
               accessibilityHint="Double tap to change payer"
@@ -416,12 +486,12 @@ const AddExpenseScreen = ({ route, navigation }) => {
         )}
         {splitMethod === "exact" && (
           <Paragraph style={styles.helperText}>
-            Enter exact amounts for each member. Total must equal $
+            Enter exact amounts for each member. Total must equal ₹
             {amount || "0"}.
             {amount && (
               <Text style={styles.totalText}>
                 {" "}
-                Current total: $
+                Current total: ₹
                 {Object.values(exactAmounts)
                   .reduce((sum, val) => sum + parseFloat(val || "0"), 0)
                   .toFixed(2)}
@@ -462,50 +532,9 @@ const AddExpenseScreen = ({ route, navigation }) => {
         >
           Add Expense
         </HapticButton>
-      </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-    paddingBottom: 32,
-  },
-  loaderContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  input: {
-    marginBottom: 16,
-  },
-  button: {
-    marginTop: 24,
-  },
-  splitTitle: {
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  splitInputsContainer: {
-    marginTop: 8,
-  },
-  splitInput: {
-    marginBottom: 8,
-  },
-  helperText: {
-    fontSize: 12,
-    marginBottom: 8,
-    opacity: 0.7,
-  },
-  totalText: {
-    fontWeight: "bold",
-    opacity: 1,
-  },
-});
 
 export default AddExpenseScreen;

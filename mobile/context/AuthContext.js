@@ -135,7 +135,21 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (name, email, password) => {
     try {
-      await authApi.signup(name, email, password);
+      const response = await authApi.signup(name, email, password);
+      const { access_token, refresh_token, user: userData } = response.data;
+      setToken(access_token);
+      setRefresh(refresh_token);
+      await setAuthTokens({
+        newAccessToken: access_token,
+        newRefreshToken: refresh_token,
+      });
+      // Normalize user id shape: ensure `_id` exists even if backend returns `id`
+      const normalizedUser = userData?._id
+        ? userData
+        : userData?.id
+        ? { ...userData, _id: userData.id }
+        : userData;
+      setUser(normalizedUser);
       return true;
     } catch (error) {
       console.error(

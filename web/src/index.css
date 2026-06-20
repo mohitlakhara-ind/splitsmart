@@ -4,30 +4,50 @@
 
 @theme {
   --font-sans: 'Inter', sans-serif;
-  --font-mono: 'Space Grotesk', monospace;
+  --font-display: 'Outfit', sans-serif;
   
-  --color-neo-main: #8855ff;
-  --color-neo-second: #ff9900;
-  --color-neo-accent: #00cc88;
-  --color-neo-bg: #f0f0f0;
-  --color-neo-dark: #1a1a1a;
+  --color-fintech-primary: var(--fintech-primary);
+  --color-fintech-primary-dark: var(--fintech-primary-dark);
+  --color-fintech-secondary: var(--fintech-secondary);
+  --color-fintech-bg: var(--fintech-bg);
+  --color-fintech-bg-alt: var(--fintech-bg-alt);
+  --color-fintech-text: var(--fintech-text);
+  --color-fintech-text-muted: var(--fintech-text-muted);
+  --color-fintech-border: var(--fintech-border);
 }
 
-/* Theme backgrounds */
-.theme-neo-light {
-  background-color: #fffdf5;
+@layer base {
+  :root {
+    --fintech-primary: #10b981;
+    --fintech-primary-dark: #059669;
+    --fintech-secondary: #0f172a;
+    --fintech-bg: #f8fafc;
+    --fintech-bg-alt: #ffffff;
+    --fintech-text: #0f172a;
+    --fintech-text-muted: #64748b;
+    --fintech-border: #e2e8f0;
+  }
+
+  .dark {
+    --fintech-primary: #10b981;
+    --fintech-primary-dark: #059669;
+    --fintech-secondary: #f8fafc;
+    --fintech-bg: #020617;
+    --fintech-bg-alt: #0f172a;
+    --fintech-text: #f8fafc;
+    --fintech-text-muted: #94a3b8;
+    --fintech-border: #1e293b;
+  }
 }
 
-.theme-neo-dark {
-  background-color: #1a1a1a;
+body {
+  background-color: var(--color-fintech-bg);
+  color: var(--color-fintech-text);
+  font-family: var(--font-sans);
 }
 
-.theme-glass-light {
-  background: radial-gradient(ellipse at top right, #c7d2fe, #e9d5ff, #ffffff);
-}
-
-.theme-glass-dark {
-  background: radial-gradient(ellipse at top right, #312e81, #0f172a, #000000);
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
 }
 
 /* Scrollbar hiding for cleaner UI */

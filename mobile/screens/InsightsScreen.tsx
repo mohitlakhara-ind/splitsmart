@@ -5,22 +5,17 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Dimensions,
 } from 'react-native';
-import { Colors, Typography, Spacing, Radii, Shadows } from '../theme/colors';
+import { useTheme } from 'react-native-paper';
+import { Typography, Spacing, Radii, Shadows } from '../theme/colors';
 import GlassCard from '../components/GlassCard';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const BAR_MAX_HEIGHT = 140;
-
-// Feature: Expense Insights Dashboard
-// Shows monthly category-wise spending breakdown per group member
-// Uses built-in animated bars (no external chart library needed)
 
 interface CategorySpend {
   category: string;
   amount: number;
-  color: string;
+  colorKey: 'accent' | 'primary' | 'warning' | 'positive' | 'negative';
   icon: string;
 }
 
@@ -31,12 +26,12 @@ interface MemberSpend {
   percent: number;
 }
 
-const MOCK_CATEGORIES: CategorySpend[] = [
-  { category: 'Food', amount: 3200, color: Colors.accent, icon: '🍔' },
-  { category: 'Transport', amount: 1800, color: Colors.primary, icon: '🚗' },
-  { category: 'Shopping', amount: 2600, color: Colors.warning, icon: '🛍️' },
-  { category: 'Entertainment', amount: 1400, color: Colors.positive, icon: '🎬' },
-  { category: 'Utilities', amount: 900, color: Colors.negative, icon: '⚡' },
+const CATEGORIES_DEF: CategorySpend[] = [
+  { category: 'Food', amount: 3200, colorKey: 'accent', icon: '🍔' },
+  { category: 'Transport', amount: 1800, colorKey: 'primary', icon: '🚗' },
+  { category: 'Shopping', amount: 2600, colorKey: 'warning', icon: '🛍️' },
+  { category: 'Entertainment', amount: 1400, colorKey: 'positive', icon: '🎬' },
+  { category: 'Utilities', amount: 900, colorKey: 'negative', icon: '⚡' },
 ];
 
 const MOCK_MEMBERS: MemberSpend[] = [
@@ -46,18 +41,290 @@ const MOCK_MEMBERS: MemberSpend[] = [
 ];
 
 const InsightsScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const theme = useTheme();
+  const customColors = (theme.colors as any).custom;
+
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('month');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  const totalSpend = MOCK_CATEGORIES.reduce((sum, c) => sum + c.amount, 0);
-  const maxAmount = Math.max(...MOCK_CATEGORIES.map(c => c.amount));
+  const categories = useMemo(() => {
+    return CATEGORIES_DEF.map(cat => ({
+      ...cat,
+      color: customColors[cat.colorKey] || theme.colors.primary,
+    }));
+  }, [customColors, theme]);
+
+  const totalSpend = useMemo(() => categories.reduce((sum, c) => sum + c.amount, 0), [categories]);
+  const maxAmount = useMemo(() => Math.max(...categories.map(c => c.amount)), [categories]);
 
   const periods = ['week', 'month', 'year'] as const;
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+      paddingHorizontal: Spacing.md,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingTop: 60,
+      paddingBottom: Spacing.md,
+    },
+    backBtn: {
+      width: 44,
+      height: 44,
+      borderRadius: Radii.full,
+      backgroundColor: customColors.glass,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 1,
+      borderColor: customColors.glassBorder,
+    },
+    backIcon: { fontSize: 20, color: theme.colors.onBackground },
+    title: {
+      fontSize: Typography.sizes.xl,
+      fontFamily: Typography.fontFamily.bold,
+      fontWeight: '700',
+      color: theme.colors.onBackground,
+    },
+    periodSelector: {
+      flexDirection: 'row',
+      backgroundColor: theme.colors.surfaceVariant,
+      borderRadius: Radii.lg,
+      padding: 4,
+      marginBottom: Spacing.md,
+      borderWidth: 1,
+      borderColor: theme.colors.outline,
+    },
+    periodBtn: {
+      flex: 1,
+      paddingVertical: 8,
+      borderRadius: Radii.md,
+      alignItems: 'center',
+    },
+    periodBtnActive: {
+      backgroundColor: theme.colors.primary,
+      ...Shadows.card,
+      shadowColor: theme.colors.primary,
+    },
+    periodText: {
+      fontSize: Typography.sizes.sm,
+      fontFamily: Typography.fontFamily.medium,
+      color: customColors.textMuted,
+      fontWeight: '600',
+    },
+    periodTextActive: {
+      color: '#FFFFFF',
+    },
+    totalCard: {
+      marginBottom: Spacing.md,
+    },
+    totalLabel: {
+      fontSize: Typography.sizes.xs,
+      color: customColors.textMuted,
+      fontFamily: Typography.fontFamily.medium,
+      textTransform: 'uppercase',
+      letterSpacing: 0.8,
+      marginBottom: 6,
+    },
+    totalAmount: {
+      fontSize: Typography.sizes.xxl,
+      fontFamily: Typography.fontFamily.bold,
+      color: theme.colors.onSurface,
+      marginBottom: 8,
+    },
+    totalSubRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    totalSub: {
+      fontSize: Typography.sizes.xs,
+      color: customColors.textMuted,
+      fontFamily: Typography.fontFamily.regular,
+    },
+    trendBadge: {
+      backgroundColor: theme.dark ? 'rgba(16,185,129,0.15)' : '#e8f5e8',
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+      borderRadius: Radii.full,
+      borderWidth: 1,
+      borderColor: customColors.positive,
+    },
+    trendText: {
+      fontSize: Typography.sizes.xs,
+      color: customColors.positive,
+      fontFamily: Typography.fontFamily.medium,
+      fontWeight: '600',
+    },
+    chartCard: {
+      marginBottom: Spacing.md,
+      paddingBottom: Spacing.sm,
+    },
+    sectionTitle: {
+      fontSize: Typography.sizes.md,
+      fontFamily: Typography.fontFamily.semiBold,
+      color: theme.colors.onSurface,
+      marginBottom: Spacing.md,
+      fontWeight: '700',
+    },
+    barChart: {
+      flexDirection: 'row',
+      alignItems: 'flex-end',
+      justifyContent: 'space-between',
+      height: BAR_MAX_HEIGHT + 60,
+      paddingHorizontal: Spacing.sm,
+    },
+    barColumn: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'flex-end',
+      gap: 4,
+    },
+    barLabel: {
+      backgroundColor: theme.colors.surface,
+      borderRadius: Radii.sm,
+      paddingHorizontal: 6,
+      paddingVertical: 2,
+      borderWidth: 1,
+      borderColor: theme.colors.outline,
+      marginBottom: 4,
+      ...Shadows.card,
+      shadowColor: customColors.cardShadow,
+    },
+    barLabelText: {
+      fontSize: 10,
+      color: theme.colors.onSurface,
+      fontFamily: Typography.fontFamily.bold,
+    },
+    bar: {
+      width: 28,
+      borderRadius: Radii.sm,
+      elevation: 4,
+    },
+    barIcon: {
+      fontSize: 16,
+      marginTop: 4,
+    },
+    barCategory: {
+      fontSize: 9,
+      color: customColors.textMuted,
+      fontFamily: Typography.fontFamily.medium,
+      textAlign: 'center',
+    },
+    xAxis: {
+      height: 1,
+      backgroundColor: theme.colors.outline,
+      marginHorizontal: Spacing.sm,
+      marginTop: 4,
+    },
+    categoryList: {
+      gap: 8,
+      marginBottom: Spacing.md,
+    },
+    catItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    catLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    catDot: {
+      width: 10,
+      height: 10,
+      borderRadius: 5,
+    },
+    catIcon: { fontSize: 18 },
+    catName: {
+      fontSize: Typography.sizes.sm,
+      color: customColors.textSecondary,
+      fontFamily: Typography.fontFamily.medium,
+    },
+    catRight: {
+      alignItems: 'flex-end',
+    },
+    catAmount: {
+      fontSize: Typography.sizes.sm,
+      color: theme.colors.onSurface,
+      fontFamily: Typography.fontFamily.semiBold,
+      fontWeight: '600',
+    },
+    catPct: {
+      fontSize: Typography.sizes.xs,
+      color: customColors.textMuted,
+      fontFamily: Typography.fontFamily.regular,
+    },
+    memberCard: {
+      gap: Spacing.md,
+    },
+    memberRow: {
+      flexDirection: 'row',
+      gap: Spacing.md,
+      alignItems: 'center',
+      marginBottom: 12,
+    },
+    memberAvatar: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      backgroundColor: customColors.glassStrong,
+      borderWidth: 2,
+      borderColor: customColors.primaryLight,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    memberInitials: {
+      fontSize: Typography.sizes.sm,
+      color: theme.colors.primary,
+      fontFamily: Typography.fontFamily.bold,
+      fontWeight: '700',
+    },
+    memberInfo: {
+      flex: 1,
+      gap: 4,
+    },
+    memberNameRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    memberName: {
+      fontSize: Typography.sizes.sm,
+      color: theme.colors.onSurface,
+      fontFamily: Typography.fontFamily.semiBold,
+      fontWeight: '600',
+    },
+    memberAmount: {
+      fontSize: Typography.sizes.sm,
+      color: customColors.textSecondary,
+      fontFamily: Typography.fontFamily.medium,
+    },
+    memberBarTrack: {
+      height: 6,
+      backgroundColor: theme.colors.outline,
+      borderRadius: Radii.full,
+      overflow: 'hidden',
+      marginTop: 4,
+    },
+    memberBarFill: {
+      height: '100%',
+      borderRadius: Radii.full,
+    },
+    memberPct: {
+      fontSize: Typography.sizes.xs,
+      color: customColors.textMuted,
+      fontFamily: Typography.fontFamily.regular,
+      marginTop: 2,
+    },
+  });
 
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
             <Text style={styles.backIcon}>←</Text>
@@ -66,7 +333,6 @@ const InsightsScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           <View style={{ width: 44 }} />
         </View>
 
-        {/* Period Selector */}
         <View style={styles.periodSelector}>
           {periods.map(p => (
             <TouchableOpacity
@@ -81,23 +347,21 @@ const InsightsScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           ))}
         </View>
 
-        {/* Total Spend Card */}
         <GlassCard style={styles.totalCard} variant="elevated">
           <Text style={styles.totalLabel}>Total Group Spend ({selectedPeriod})</Text>
           <Text style={styles.totalAmount}>₹{totalSpend.toLocaleString('en-IN')}</Text>
           <View style={styles.totalSubRow}>
-            <Text style={styles.totalSub}>across {MOCK_CATEGORIES.length} categories</Text>
+            <Text style={styles.totalSub}>across {categories.length} categories</Text>
             <View style={styles.trendBadge}>
               <Text style={styles.trendText}>↓ 12% vs last {selectedPeriod}</Text>
             </View>
           </View>
         </GlassCard>
 
-        {/* Category Bar Chart */}
         <GlassCard style={styles.chartCard} variant="default">
           <Text style={styles.sectionTitle}>Category Breakdown</Text>
           <View style={styles.barChart}>
-            {MOCK_CATEGORIES.map((cat) => {
+            {categories.map((cat) => {
               const barHeight = (cat.amount / maxAmount) * BAR_MAX_HEIGHT;
               const isActive = activeCategory === cat.category;
               return (
@@ -108,7 +372,6 @@ const InsightsScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                     setActiveCategory(isActive ? null : cat.category)
                   }
                 >
-                  {/* Amount label on hover */}
                   {isActive && (
                     <View style={styles.barLabel}>
                       <Text style={styles.barLabelText}>
@@ -116,14 +379,13 @@ const InsightsScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                       </Text>
                     </View>
                   )}
-                  {/* Bar */}
                   <View
                     style={[
                       styles.bar,
                       {
                         height: barHeight,
                         backgroundColor: cat.color,
-                        opacity: isActive ? 1 : 0.7,
+                        opacity: isActive ? 1 : 0.75,
                         shadowColor: cat.color,
                         shadowOpacity: isActive ? 0.8 : 0.3,
                         shadowRadius: isActive ? 10 : 4,
@@ -139,13 +401,11 @@ const InsightsScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
               );
             })}
           </View>
-          {/* X-axis line */}
           <View style={styles.xAxis} />
         </GlassCard>
 
-        {/* Category Pills Legend */}
         <View style={styles.categoryList}>
-          {MOCK_CATEGORIES.map((cat) => {
+          {categories.map((cat) => {
             const pct = ((cat.amount / totalSpend) * 100).toFixed(1);
             return (
               <GlassCard key={cat.category} style={styles.catItem} padding={12}>
@@ -163,7 +423,6 @@ const InsightsScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           })}
         </View>
 
-        {/* Member Contribution */}
         <GlassCard style={styles.memberCard} variant="default">
           <Text style={styles.sectionTitle}>Who Spent the Most?</Text>
           {MOCK_MEMBERS.map((member) => (
@@ -180,7 +439,7 @@ const InsightsScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                   <View
                     style={[
                       styles.memberBarFill,
-                      { width: `${member.percent}%`, backgroundColor: Colors.primary },
+                      { width: `${member.percent}%`, backgroundColor: theme.colors.primary },
                     ]}
                   />
                 </View>
@@ -190,260 +449,10 @@ const InsightsScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           ))}
         </GlassCard>
 
-        <View style={{ height: 80 }} />
+        <View style={{ height: 120 }} />
       </ScrollView>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.bg,
-    paddingHorizontal: Spacing.md,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 60,
-    paddingBottom: Spacing.md,
-  },
-  backBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: Radii.full,
-    backgroundColor: Colors.glass,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: Colors.glassBorder,
-  },
-  backIcon: { fontSize: 20, color: Colors.textPrimary },
-  title: {
-    fontSize: Typography.sizes.xl,
-    fontFamily: Typography.fontFamily.bold,
-    color: Colors.textPrimary,
-  },
-  periodSelector: {
-    flexDirection: 'row',
-    backgroundColor: Colors.bgSurface,
-    borderRadius: Radii.lg,
-    padding: 4,
-    marginBottom: Spacing.md,
-    borderWidth: 1,
-    borderColor: Colors.glassBorder,
-  },
-  periodBtn: {
-    flex: 1,
-    paddingVertical: 8,
-    borderRadius: Radii.md,
-    alignItems: 'center',
-  },
-  periodBtnActive: {
-    backgroundColor: Colors.primary,
-    ...Shadows.card,
-  },
-  periodText: {
-    fontSize: Typography.sizes.sm,
-    fontFamily: Typography.fontFamily.medium,
-    color: Colors.textMuted,
-  },
-  periodTextActive: {
-    color: Colors.textPrimary,
-  },
-  totalCard: {
-    marginBottom: Spacing.md,
-  },
-  totalLabel: {
-    fontSize: Typography.sizes.xs,
-    color: Colors.textMuted,
-    fontFamily: Typography.fontFamily.medium,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginBottom: 6,
-  },
-  totalAmount: {
-    fontSize: Typography.sizes.xxl,
-    fontFamily: Typography.fontFamily.bold,
-    color: Colors.textPrimary,
-    marginBottom: 8,
-  },
-  totalSubRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  totalSub: {
-    fontSize: Typography.sizes.xs,
-    color: Colors.textMuted,
-    fontFamily: Typography.fontFamily.regular,
-  },
-  trendBadge: {
-    backgroundColor: 'rgba(16,185,129,0.15)',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: Radii.full,
-    borderWidth: 1,
-    borderColor: Colors.positive,
-  },
-  trendText: {
-    fontSize: Typography.sizes.xs,
-    color: Colors.positive,
-    fontFamily: Typography.fontFamily.medium,
-  },
-  chartCard: {
-    marginBottom: Spacing.md,
-    paddingBottom: Spacing.sm,
-  },
-  sectionTitle: {
-    fontSize: Typography.sizes.md,
-    fontFamily: Typography.fontFamily.semiBold,
-    color: Colors.textPrimary,
-    marginBottom: Spacing.md,
-  },
-  barChart: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-    height: BAR_MAX_HEIGHT + 60,
-    paddingHorizontal: Spacing.sm,
-  },
-  barColumn: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    gap: 4,
-  },
-  barLabel: {
-    backgroundColor: Colors.bgCard,
-    borderRadius: Radii.sm,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderWidth: 1,
-    borderColor: Colors.glassBorder,
-    marginBottom: 4,
-  },
-  barLabelText: {
-    fontSize: 10,
-    color: Colors.textPrimary,
-    fontFamily: Typography.fontFamily.bold,
-  },
-  bar: {
-    width: 28,
-    borderRadius: Radii.sm,
-    elevation: 8,
-  },
-  barIcon: {
-    fontSize: 16,
-    marginTop: 4,
-  },
-  barCategory: {
-    fontSize: 9,
-    color: Colors.textMuted,
-    fontFamily: Typography.fontFamily.medium,
-    textAlign: 'center',
-  },
-  xAxis: {
-    height: 1,
-    backgroundColor: Colors.glassBorder,
-    marginHorizontal: Spacing.sm,
-    marginTop: 4,
-  },
-  categoryList: {
-    gap: 8,
-    marginBottom: Spacing.md,
-  },
-  catItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  catLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  catDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  catIcon: { fontSize: 18 },
-  catName: {
-    fontSize: Typography.sizes.sm,
-    color: Colors.textSecondary,
-    fontFamily: Typography.fontFamily.medium,
-  },
-  catRight: {
-    alignItems: 'flex-end',
-  },
-  catAmount: {
-    fontSize: Typography.sizes.sm,
-    color: Colors.textPrimary,
-    fontFamily: Typography.fontFamily.semiBold,
-  },
-  catPct: {
-    fontSize: Typography.sizes.xs,
-    color: Colors.textMuted,
-    fontFamily: Typography.fontFamily.regular,
-  },
-  memberCard: {
-    gap: Spacing.md,
-  },
-  memberRow: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-    alignItems: 'center',
-  },
-  memberAvatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: Colors.glassStrong,
-    borderWidth: 2,
-    borderColor: Colors.primaryLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  memberInitials: {
-    fontSize: Typography.sizes.sm,
-    color: Colors.primaryLight,
-    fontFamily: Typography.fontFamily.bold,
-  },
-  memberInfo: {
-    flex: 1,
-    gap: 4,
-  },
-  memberNameRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  memberName: {
-    fontSize: Typography.sizes.sm,
-    color: Colors.textPrimary,
-    fontFamily: Typography.fontFamily.semiBold,
-  },
-  memberAmount: {
-    fontSize: Typography.sizes.sm,
-    color: Colors.textSecondary,
-    fontFamily: Typography.fontFamily.medium,
-  },
-  memberBarTrack: {
-    height: 6,
-    backgroundColor: Colors.glass,
-    borderRadius: Radii.full,
-    overflow: 'hidden',
-  },
-  memberBarFill: {
-    height: '100%',
-    borderRadius: Radii.full,
-  },
-  memberPct: {
-    fontSize: Typography.sizes.xs,
-    color: Colors.textMuted,
-    fontFamily: Typography.fontFamily.regular,
-  },
-});
 
 export default InsightsScreen;

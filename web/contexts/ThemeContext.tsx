@@ -1,20 +1,15 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { THEMES } from '../constants';
 
-type ThemeStyle = 'neobrutalism' | 'glassmorphism';
 type ThemeMode = 'light' | 'dark';
 
 interface ThemeContextType {
-  style: ThemeStyle;
   mode: ThemeMode;
-  toggleStyle: () => void;
   toggleMode: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [style, setStyle] = useState<ThemeStyle>(THEMES.NEOBRUTALISM as ThemeStyle);
   const [mode, setMode] = useState<ThemeMode>('light');
 
   useEffect(() => {
@@ -25,16 +20,12 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [mode]);
 
-  const toggleStyle = () => {
-    setStyle(prev => prev === THEMES.NEOBRUTALISM ? THEMES.GLASSMORPHISM as ThemeStyle : THEMES.NEOBRUTALISM as ThemeStyle);
-  };
-
   const toggleMode = () => {
     setMode(prev => prev === 'light' ? 'dark' : 'light');
   };
 
   return (
-    <ThemeContext.Provider value={{ style, mode, toggleStyle, toggleMode }}>
+    <ThemeContext.Provider value={{ mode, toggleMode }}>
       {children}
     </ThemeContext.Provider>
   );

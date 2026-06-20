@@ -1,17 +1,20 @@
 import * as ImagePicker from "expo-image-picker";
 import { useContext, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
-import { Appbar, Avatar, TextInput, Title } from "react-native-paper";
+import { Appbar, Avatar, TextInput, Title, useTheme } from "react-native-paper";
 import HapticButton from '../components/ui/HapticButton';
 import { HapticAppbarBackAction } from '../components/ui/HapticAppbar';
 import { updateUser } from "../api/auth";
 import { AuthContext } from "../context/AuthContext";
+import { Spacing, Radii } from "../theme/colors";
 
 const EditProfileScreen = ({ navigation }) => {
   const { user, token, updateUserInContext } = useContext(AuthContext);
   const [name, setName] = useState(user?.name || "");
   const [pickedImage, setPickedImage] = useState(null); // { uri, base64 }
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const theme = useTheme();
+  const customColors = theme.colors.custom;
 
   const handleUpdateProfile = async () => {
     if (!name) {
@@ -22,9 +25,7 @@ const EditProfileScreen = ({ navigation }) => {
     try {
       const updates = { name };
 
-      // Add image if picked
       if (pickedImage?.base64) {
-        // Dynamically determine MIME type from picker metadata
         const mime =
           pickedImage.mimeType && /image\//.test(pickedImage.mimeType)
             ? pickedImage.mimeType
@@ -45,7 +46,6 @@ const EditProfileScreen = ({ navigation }) => {
   };
 
   const pickImage = async () => {
-    // Ask permissions
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
       Alert.alert(
@@ -63,48 +63,83 @@ const EditProfileScreen = ({ navigation }) => {
     });
     if (!result.canceled && result.assets && result.assets.length > 0) {
       const asset = result.assets[0];
-      // Capture mimeType (expo-image-picker provides mimeType on iOS/Android SDK 49+)
-      let mimeType = asset.mimeType || asset.type; // expo sometimes supplies type like 'image'
+      let mimeType = asset.mimeType || asset.type;
       if (mimeType && !/image\//.test(mimeType)) {
-        // if it's just 'image', normalize
         if (mimeType === 'image') mimeType = 'image/jpeg';
       }
       if (!mimeType || !/image\//.test(mimeType)) {
-        // Attempt to infer from file extension as a lightweight fallback
         const ext = (asset.uri || "").split(".").pop()?.toLowerCase();
         if (ext === "png") mimeType = "image/png";
         else if (ext === "webp") mimeType = "image/webp";
         else if (ext === "gif") mimeType = "image/gif";
         else if (ext === "jpg" || ext === "jpeg") mimeType = "image/jpeg";
-        else mimeType = "image/jpeg"; // safe default
+        else mimeType = "image/jpeg";
       }
       setPickedImage({ uri: asset.uri, base64: asset.base64, mimeType });
     }
   };
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    scrollContent: {
+      padding: Spacing.md,
+      paddingBottom: 140,
+    },
+    title: {
+      fontWeight: 'bold',
+      color: theme.colors.onBackground,
+      marginBottom: 20,
+    },
+    profilePictureSection: {
+      alignItems: "center",
+      marginBottom: 24,
+    },
+    imageButton: {
+      marginTop: 12,
+      borderColor: theme.colors.primary,
+    },
+    input: {
+      marginBottom: 20,
+      backgroundColor: theme.colors.surface,
+    },
+    button: {
+      marginTop: 8,
+      borderRadius: Radii.md,
+      paddingVertical: 4,
+    },
+  });
+
   return (
     <View style={styles.container}>
-      <Appbar.Header>
-        <HapticAppbarBackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Edit Profile" />
+      <Appbar.Header style={{ backgroundColor: theme.colors.surface }}>
+        <HapticAppbarBackAction color={theme.colors.onSurface} onPress={() => navigation.goBack()} />
+        <Appbar.Content title="Edit Profile" titleStyle={{ fontWeight: 'bold', color: theme.colors.onSurface }} />
       </Appbar.Header>
-      <View style={styles.content}>
-        <Title>Edit Your Details</Title>
+      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+        <Title style={styles.title}>Edit Your Details</Title>
 
-        {/* Profile Picture Section */}
         <View style={styles.profilePictureSection}>
           {pickedImage?.uri ? (
             <Avatar.Image size={100} source={{ uri: pickedImage.uri }} />
           ) : user?.imageUrl && /^(https?:|data:image)/.test(user.imageUrl) ? (
             <Avatar.Image size={100} source={{ uri: user.imageUrl }} />
           ) : (
-            <Avatar.Text size={100} label={(user?.name || "?").charAt(0)} />
+            <Avatar.Text 
+              size={100} 
+              label={(user?.name || "?").charAt(0)} 
+              style={{ backgroundColor: customColors.glassStrong }}
+              labelStyle={{ color: theme.colors.primary, fontWeight: '700' }}
+            />
           )}
           <HapticButton
             mode="outlined"
             onPress={pickImage}
             icon="camera"
             style={styles.imageButton}
+            textColor={theme.colors.primary}
             accessibilityLabel="Change profile picture"
             accessibilityRole="button"
             accessibilityHint="Opens your media library to select a new photo"
@@ -118,6 +153,9 @@ const EditProfileScreen = ({ navigation }) => {
           value={name}
           onChangeText={setName}
           style={styles.input}
+          mode="outlined"
+          activeOutlineColor={theme.colors.primary}
+          outlineColor={theme.colors.outline}
           accessibilityLabel="Full Name"
         />
         <HapticButton
@@ -131,31 +169,9 @@ const EditProfileScreen = ({ navigation }) => {
         >
           Save Changes
         </HapticButton>
-      </View>
+      </ScrollView>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    padding: 16,
-  },
-  profilePictureSection: {
-    alignItems: "center",
-    marginBottom: 24,
-  },
-  imageButton: {
-    marginTop: 12,
-  },
-  input: {
-    marginBottom: 16,
-  },
-  button: {
-    marginTop: 8,
-  },
-});
 
 export default EditProfileScreen;

@@ -15,10 +15,14 @@ import { triggerPullRefreshHaptic } from '../components/ui/hapticUtils';
 import { getFriendsBalance, getGroups } from "../api/groups";
 import { AuthContext } from "../context/AuthContext";
 import { formatCurrency } from "../utils/currency";
+import { Spacing, Radii } from "../theme/colors";
+import GlassCard from "../components/GlassCard";
 
 const FriendsScreen = () => {
   const { token, user } = useContext(AuthContext);
   const theme = useTheme();
+  const customColors = theme.colors.custom;
+  
   const [friends, setFriends] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -28,7 +32,6 @@ const FriendsScreen = () => {
   const fetchData = async (showLoading = true) => {
     if (showLoading) setIsLoading(true);
     try {
-      // Fetch friends balance + groups concurrently for group icons
       const friendsResponse = await getFriendsBalance();
       const friendsData = friendsResponse.data.friendsBalance || [];
       const groupsResponse = await getGroups();
@@ -72,18 +75,76 @@ const FriendsScreen = () => {
     }
   }, [token, isFocused]);
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    explanationContainer: {
+      margin: Spacing.sm,
+      borderColor: theme.colors.outline,
+      borderLeftWidth: 4,
+      borderLeftColor: theme.colors.primary,
+    },
+    explanationContent: {
+      flexDirection: "row",
+      alignItems: "flex-start",
+    },
+    explanationText: {
+      fontSize: 12,
+      color: customColors.textSecondary,
+      lineHeight: 18,
+      flex: 1,
+      paddingRight: 8,
+    },
+    closeButton: {
+      margin: 0,
+      marginTop: -4,
+    },
+    emptyText: {
+      textAlign: "center",
+      marginTop: 60,
+      color: customColors.textMuted,
+      fontSize: 16,
+      fontWeight: "500",
+    },
+    skeletonContainer: {
+      padding: Spacing.md,
+    },
+    skeletonRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: 16,
+    },
+    skeletonAvatar: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      backgroundColor: theme.colors.outline,
+    },
+    skeletonLine: {
+      height: 14,
+      backgroundColor: theme.colors.outline,
+      borderRadius: 6,
+      marginBottom: 6,
+    },
+    skeletonLineSmall: {
+      height: 12,
+      backgroundColor: theme.colors.outline,
+      borderRadius: 6,
+    },
+  });
+
   const renderFriend = ({ item }) => {
-    const balanceColor = item.netBalance < 0 ? "red" : "green";
+    const balanceColor = item.netBalance < 0 ? customColors.negative : customColors.positive;
     const balanceText =
       item.netBalance < 0
         ? `You owe ${formatCurrency(Math.abs(item.netBalance))}`
         : `Owes you ${formatCurrency(item.netBalance)}`;
 
-    // Determine if we have an image URL or a base64 payload
     const hasImage = !!item.imageUrl;
     let imageUri = null;
     if (hasImage) {
-      // If it's a raw base64 string without prefix, add a default MIME prefix
       if (
         /^data:image/.test(item.imageUrl) ||
         /^https?:\/\//.test(item.imageUrl)
@@ -97,15 +158,18 @@ const FriendsScreen = () => {
     return (
       <HapticListAccordion
         title={item.name}
+        titleStyle={{ color: theme.colors.onSurface, fontWeight: '600' }}
         description={item.netBalance !== 0 ? balanceText : "Settled up"}
         descriptionStyle={{
-          color: item.netBalance !== 0 ? balanceColor : "gray",
+          color: item.netBalance !== 0 ? balanceColor : customColors.textMuted,
+          fontWeight: '500',
         }}
         accessibilityRole="button"
         accessibilityLabel={`Friend ${item.name}. ${
           item.netBalance !== 0 ? balanceText : "Settled up"
         }`}
         accessibilityHint="Double tap to see balance breakdown"
+        style={{ backgroundColor: theme.colors.surface }}
         left={(props) =>
           imageUri ? (
             <Avatar.Image {...props} size={40} source={{ uri: imageUri }} />
@@ -114,17 +178,19 @@ const FriendsScreen = () => {
               {...props}
               size={40}
               label={(item.name || "?").charAt(0)}
+              style={{ backgroundColor: customColors.glassStrong }}
+              labelStyle={{ color: theme.colors.primary, fontWeight: '700' }}
             />
           )
         }
       >
         {item.groups.map((group) => {
-          const groupBalanceColor = group.balance < 0 ? "red" : "green";
+          const groupBalanceColor = group.balance < 0 ? customColors.negative : customColors.positive;
           const groupBalanceText =
             group.balance < 0
               ? `You owe ${formatCurrency(Math.abs(group.balance))}`
               : `Owes you ${formatCurrency(group.balance)}`;
-          // Prepare group icon (imageUrl may be base64 or URL)
+
           let groupImageUri = null;
           if (group.imageUrl) {
             if (
@@ -143,8 +209,9 @@ const FriendsScreen = () => {
             <List.Item
               key={group.id}
               title={group.name}
+              titleStyle={{ color: theme.colors.onSurface, fontWeight: '500' }}
               description={groupBalanceText}
-              descriptionStyle={{ color: groupBalanceColor }}
+              descriptionStyle={{ color: groupBalanceColor, fontWeight: '500' }}
               left={(props) =>
                 groupImageUri ? (
                   <Avatar.Image
@@ -157,6 +224,8 @@ const FriendsScreen = () => {
                     {...props}
                     size={36}
                     label={(group.name || "?").charAt(0)}
+                    style={{ backgroundColor: theme.colors.outline }}
+                    labelStyle={{ color: customColors.textSecondary }}
                   />
                 )
               }
@@ -210,8 +279,8 @@ const FriendsScreen = () => {
   if (isLoading) {
     return (
       <View style={styles.container}>
-        <Appbar.Header>
-          <Appbar.Content title="Friends" />
+        <Appbar.Header style={{ backgroundColor: theme.colors.surface }}>
+          <Appbar.Content title="Friends" titleStyle={{ fontWeight: 'bold', color: theme.colors.onSurface }} />
         </Appbar.Header>
         <View
           style={styles.skeletonContainer}
@@ -228,11 +297,11 @@ const FriendsScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header>
-        <Appbar.Content title="Friends" />
+      <Appbar.Header style={{ backgroundColor: theme.colors.surface }}>
+        <Appbar.Content title="Friends" titleStyle={{ fontWeight: 'bold', color: theme.colors.onSurface }} />
       </Appbar.Header>
       {showTooltip && (
-        <View style={styles.explanationContainer}>
+        <GlassCard style={styles.explanationContainer} variant="default" padding={12}>
           <View style={styles.explanationContent}>
             <Text style={styles.explanationText}>
               💡 These amounts show your direct balance with each friend across
@@ -244,20 +313,22 @@ const FriendsScreen = () => {
               size={16}
               onPress={() => setShowTooltip(false)}
               style={styles.closeButton}
+              iconColor={customColors.textMuted}
               accessibilityLabel="Close tooltip"
               accessibilityRole="button"
             />
           </View>
-        </View>
+        </GlassCard>
       )}
       <FlatList
         data={friends}
         renderItem={renderFriend}
         keyExtractor={(item) => item.id}
-        ItemSeparatorComponent={Divider}
+        ItemSeparatorComponent={() => <Divider style={{ backgroundColor: theme.colors.outline }} />}
         ListEmptyComponent={
           <Text style={styles.emptyText}>No balances with friends yet.</Text>
         }
+        contentContainerStyle={{ paddingBottom: 140 }}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
@@ -271,67 +342,5 @@ const FriendsScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  loaderContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  explanationContainer: {
-    backgroundColor: "#f0f8ff",
-    margin: 8,
-    borderRadius: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: "#2196f3",
-  },
-  explanationContent: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    padding: 12,
-  },
-  explanationText: {
-    fontSize: 12,
-    color: "#555",
-    lineHeight: 16,
-    flex: 1,
-    paddingRight: 8,
-  },
-  closeButton: {
-    margin: 0,
-    marginTop: -4,
-  },
-  emptyText: {
-    textAlign: "center",
-    marginTop: 20,
-  },
-  skeletonContainer: {
-    padding: 16,
-  },
-  skeletonRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 14,
-  },
-  skeletonAvatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: "#e0e0e0",
-  },
-  skeletonLine: {
-    height: 14,
-    backgroundColor: "#e0e0e0",
-    borderRadius: 6,
-    marginBottom: 6,
-  },
-  skeletonLineSmall: {
-    height: 12,
-    backgroundColor: "#e0e0e0",
-    borderRadius: 6,
-  },
-});
-
 export default FriendsScreen;
+

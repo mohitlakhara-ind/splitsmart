@@ -20,6 +20,7 @@ import {
   Card,
   Text,
   TextInput,
+  useTheme,
 } from "react-native-paper";
 import HapticButton from '../components/ui/HapticButton';
 import HapticIconButton from '../components/ui/HapticIconButton';
@@ -34,12 +35,16 @@ import {
   getOptimizedSettlements,
 } from "../api/groups";
 import { AuthContext } from "../context/AuthContext";
+import { Spacing, Radii, Shadows } from "../theme/colors";
 
 const ICON_CHOICES = ["👥", "🏠", "🎉", "🧳", "🍽️", "🚗", "🏖️", "🎮", "💼"];
 
 const GroupSettingsScreen = ({ route, navigation }) => {
   const { groupId } = route.params;
   const { token, user } = useContext(AuthContext);
+  const theme = useTheme();
+  const customColors = theme.colors.custom;
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [members, setMembers] = useState([]);
@@ -77,26 +82,26 @@ const GroupSettingsScreen = ({ route, navigation }) => {
   }, [token, groupId]);
 
   useLayoutEffect(() => {
-    navigation.setOptions({ title: "Group Settings" });
-  }, [navigation]);
+    navigation.setOptions({
+      title: "Group Settings",
+      headerStyle: { backgroundColor: theme.colors.surface },
+      headerTintColor: theme.colors.onSurface,
+    });
+  }, [navigation, theme]);
 
   const onSave = async () => {
     if (!isAdmin) return;
     const updates = {};
     if (name && name !== group?.name) updates.name = name;
 
-    // Handle different icon types
     if (pickedImage?.base64) {
-      // If user picked an image, use it as imageUrl
       updates.imageUrl = `data:image/jpeg;base64,${pickedImage.base64}`;
     } else if (icon && icon !== (group?.imageUrl || group?.icon || "")) {
-      // If user selected an emoji and it's different from current
-      // Check if it's an emoji (not a URL)
       const isEmoji = ICON_CHOICES.includes(icon);
       if (isEmoji) {
-        updates.imageUrl = icon; // Store emoji as imageUrl for now
+        updates.imageUrl = icon;
       } else {
-        updates.imageUrl = icon; // Store other text/URL as imageUrl
+        updates.imageUrl = icon;
       }
     }
 
@@ -121,7 +126,6 @@ const GroupSettingsScreen = ({ route, navigation }) => {
 
   const pickImage = async () => {
     if (!isAdmin) return;
-    // Ask permissions
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
       Alert.alert(
@@ -148,7 +152,7 @@ const GroupSettingsScreen = ({ route, navigation }) => {
       const code = group?.joinCode;
       if (!code) return;
       await Share.share({
-        message: `Join my group on Splitwiser! Use code ${code}`,
+        message: `Join my group on SplitSmart! Use code ${code}`,
       });
     } catch (e) {
       console.error("Share failed", e);
@@ -157,7 +161,7 @@ const GroupSettingsScreen = ({ route, navigation }) => {
 
   const onKick = (memberId, name) => {
     if (!isAdmin) return;
-    if (memberId === user?._id) return; // safeguard
+    if (memberId === user?._id) return;
     Alert.alert("Remove member", `Are you sure you want to remove ${name}?`, [
       { text: "Cancel", style: "cancel" },
       {
@@ -165,7 +169,6 @@ const GroupSettingsScreen = ({ route, navigation }) => {
         style: "destructive",
         onPress: async () => {
           try {
-            // Pre-check balances using optimized settlements
             const settlementsRes = await getOptimizedSettlements(groupId);
             const settlements =
               settlementsRes?.data?.optimizedSettlements || [];
@@ -224,7 +227,6 @@ const GroupSettingsScreen = ({ route, navigation }) => {
 
   const onDeleteGroup = () => {
     if (!isAdmin) return;
-    // Only allow delete if no other members present
     const others = members.filter((m) => m.userId !== user?._id);
     if (others.length > 0) {
       Alert.alert(
@@ -259,6 +261,71 @@ const GroupSettingsScreen = ({ route, navigation }) => {
     );
   };
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    scrollContent: {
+      padding: Spacing.md,
+      paddingBottom: 140,
+    },
+    loaderContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: theme.colors.background,
+    },
+    card: {
+      marginBottom: Spacing.md,
+      backgroundColor: theme.colors.surface,
+      borderWidth: 1,
+      borderColor: theme.colors.outline,
+      borderRadius: Radii.lg,
+      elevation: 2,
+      shadowColor: customColors.cardShadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: theme.dark ? 0.3 : 0.05,
+      shadowRadius: 6,
+    },
+    cardTitle: {
+      color: theme.colors.onSurface,
+      fontWeight: '700',
+      fontSize: 18,
+    },
+    iconRow: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      marginBottom: 12,
+    },
+    iconBtn: {
+      marginRight: 8,
+      marginBottom: 8,
+      borderRadius: Radii.sm,
+    },
+    membersSection: {
+      gap: 8,
+      marginTop: 8,
+    },
+    joinCodeText: {
+      fontSize: 18,
+      fontWeight: '700',
+      marginBottom: 12,
+      color: theme.colors.onSurface,
+    },
+    btnDangerOutline: {
+      borderColor: customColors.negative,
+      borderRadius: Radii.md,
+      paddingVertical: 4,
+    },
+    btnDangerContained: {
+      marginTop: 12,
+      backgroundColor: customColors.negative,
+      borderRadius: Radii.md,
+      paddingVertical: 4,
+    }
+  });
+
   const renderMemberItem = (m) => {
     const isSelf = m.userId === user?._id;
     const displayName = m.user?.name || "Unknown";
@@ -267,12 +334,19 @@ const GroupSettingsScreen = ({ route, navigation }) => {
       <HapticListItem
         key={m.userId}
         title={displayName}
+        titleStyle={{ color: theme.colors.onSurface, fontWeight: '600' }}
         description={m.role === "admin" ? "Admin" : undefined}
+        descriptionStyle={{ color: customColors.textMuted }}
         left={() =>
           imageUrl ? (
             <Avatar.Image size={40} source={{ uri: imageUrl }} />
           ) : (
-            <Avatar.Text size={40} label={(displayName || "?").charAt(0)} />
+            <Avatar.Text 
+              size={40} 
+              label={(displayName || "?").charAt(0)} 
+              style={{ backgroundColor: customColors.glassStrong }}
+              labelStyle={{ color: theme.colors.primary, fontWeight: '700' }}
+            />
           )
         }
         right={() =>
@@ -283,6 +357,7 @@ const GroupSettingsScreen = ({ route, navigation }) => {
               accessibilityLabel={`Remove ${displayName} from group`}
               accessibilityRole="button"
               accessibilityHint="Removes this member from the group"
+              iconColor={customColors.negative}
             />
           ) : null
         }
@@ -293,7 +368,7 @@ const GroupSettingsScreen = ({ route, navigation }) => {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator />
+        <ActivityIndicator size="large" />
       </View>
     );
   }
@@ -301,18 +376,21 @@ const GroupSettingsScreen = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Card style={styles.card}>
-          <Card.Title title="Group Info" />
+        <Card style={styles.card} mode="outlined">
+          <Card.Title title="Group Info" titleStyle={styles.cardTitle} />
           <Card.Content>
             <TextInput
               label="Group Name"
               value={name}
               onChangeText={setName}
               editable={!!isAdmin}
-              style={{ marginBottom: 12 }}
+              style={{ marginBottom: 16, backgroundColor: theme.colors.background }}
+              mode="outlined"
+              activeOutlineColor={theme.colors.primary}
+              outlineColor={theme.colors.outline}
               accessibilityLabel="Group Name"
             />
-            <Text style={{ marginBottom: 8 }}>Icon</Text>
+            <Text style={{ marginBottom: 8, fontWeight: '600', color: theme.colors.onSurface }}>Icon Choice</Text>
             <View style={styles.iconRow}>
               {ICON_CHOICES.map((i) => (
                 <HapticButton
@@ -328,7 +406,7 @@ const GroupSettingsScreen = ({ route, navigation }) => {
                 </HapticButton>
               ))}
             </View>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={{ flexDirection: "row", alignItems: "center", marginTop: 8 }}>
               <HapticButton
                 mode="outlined"
                 onPress={pickImage}
@@ -358,7 +436,7 @@ const GroupSettingsScreen = ({ route, navigation }) => {
             {isAdmin && (
               <HapticButton
                 mode="contained"
-                style={{ marginTop: 12 }}
+                style={{ marginTop: 18, borderRadius: Radii.md }}
                 loading={saving}
                 disabled={saving}
                 onPress={onSave}
@@ -371,15 +449,17 @@ const GroupSettingsScreen = ({ route, navigation }) => {
           </Card.Content>
         </Card>
 
-        <Card style={styles.card}>
-          <Card.Title title="Members" />
-          <Card.Content>{members.map(renderMemberItem)}</Card.Content>
+        <Card style={styles.card} mode="outlined">
+          <Card.Title title="Members" titleStyle={styles.cardTitle} />
+          <Card.Content style={styles.membersSection}>
+            {members.map(renderMemberItem)}
+          </Card.Content>
         </Card>
 
-        <Card style={styles.card}>
-          <Card.Title title="Invite" />
+        <Card style={styles.card} mode="outlined">
+          <Card.Title title="Invite Code" titleStyle={styles.cardTitle} />
           <Card.Content>
-            <Text style={{ marginBottom: 8 }}>
+            <Text style={styles.joinCodeText}>
               Join Code: {group?.joinCode}
             </Text>
             <HapticButton
@@ -388,22 +468,23 @@ const GroupSettingsScreen = ({ route, navigation }) => {
               icon="share-variant"
               accessibilityLabel="Share invite code"
               accessibilityRole="button"
+              style={{ borderRadius: Radii.md }}
             >
-              Share invite
+              Share Invite
             </HapticButton>
           </Card.Content>
         </Card>
 
-        <Card style={styles.card}>
-          <Card.Title title="Danger Zone" />
+        <Card style={styles.card} mode="outlined">
+          <Card.Title title="Danger Zone" titleStyle={styles.cardTitle} />
           <Card.Content>
             <View>
               <HapticButton
                 mode="outlined"
-                buttonColor="#fff"
-                textColor="#d32f2f"
+                textColor={customColors.negative}
                 onPress={onLeave}
                 icon="logout-variant"
+                style={styles.btnDangerOutline}
                 accessibilityLabel="Leave Group"
                 accessibilityRole="button"
                 accessibilityHint="You must settle balances before leaving"
@@ -413,10 +494,10 @@ const GroupSettingsScreen = ({ route, navigation }) => {
               {isAdmin && (
                 <HapticButton
                   mode="contained"
-                  buttonColor="#d32f2f"
                   onPress={onDeleteGroup}
                   icon="delete"
-                  style={{ marginTop: 8 }}
+                  style={styles.btnDangerContained}
+                  textColor="#FFFFFF"
                   accessibilityLabel="Delete Group"
                   accessibilityRole="button"
                   accessibilityHint="Permanently deletes the group and all data"
@@ -431,14 +512,5 @@ const GroupSettingsScreen = ({ route, navigation }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  scrollContent: { padding: 16 },
-  loaderContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  card: { marginBottom: 16 },
-  iconRow: { flexDirection: "row", flexWrap: "wrap", marginBottom: 8 },
-  iconBtn: { marginRight: 8, marginBottom: 8 },
-});
 
 export default GroupSettingsScreen;

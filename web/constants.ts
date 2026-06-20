@@ -1,7 +1,3 @@
-export const THEMES = {
-  NEOBRUTALISM: 'neobrutalism',
-  GLASSMORPHISM: 'glassmorphism',
-};
 
 export const COLORS = [
   '#FF6B6B', // Red

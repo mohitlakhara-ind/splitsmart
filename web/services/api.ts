@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Use localhost for development, production URL for production
-const API_URL = import.meta.env.VITE_API_URL || 'https://splitwiser-production.up.railway.app';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const api = axios.create({
   baseURL: API_URL,

@@ -2,8 +2,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, Search, TrendingDown, TrendingUp, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { EmptyState } from '../components/ui/EmptyState';
-import { THEMES } from '../constants';
-import { useTheme } from '../contexts/ThemeContext';
 import { getFriendsBalance, getGroups } from '../services/api';
 import { formatCurrency } from '../utils/formatters';
 
@@ -29,7 +27,6 @@ export const Friends = () => {
   const [error, setError] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const { style } = useTheme();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -98,26 +95,22 @@ export const Friends = () => {
 
   const getAvatarContent = (imageUrl: string | undefined, name: string, size: 'sm' | 'lg' = 'lg') => {
     const sizeClass = size === 'lg' ? 'w-14 h-14 text-xl' : 'w-10 h-10 text-sm';
-    const isNeo = style === THEMES.NEOBRUTALISM;
 
     if (imageUrl && /^(https?:|data:image)/.test(imageUrl)) {
       return (
         <img
           src={imageUrl}
           alt={name}
-          className={`${sizeClass} object-cover border-2 border-white dark:border-gray-800 shadow-sm ${isNeo ? 'rounded-none' : 'rounded-full'}`}
+          className={`${sizeClass} object-cover border-2 border-white shadow-sm rounded-full`}
         />
       );
     }
     return (
-      <div className={`${sizeClass} flex items-center justify-center font-bold text-white shadow-sm ${isNeo ? 'bg-black rounded-none' : 'bg-gradient-to-br from-blue-500 to-purple-600 rounded-full'
-        }`}>
+      <div className={`${sizeClass} flex items-center justify-center font-bold text-[var(--color-fintech-primary)] bg-[var(--color-fintech-primary)]/10 shadow-sm rounded-full`}>
         {name.charAt(0)}
       </div>
     );
   };
-
-  const isNeo = style === THEMES.NEOBRUTALISM;
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-8 min-h-screen">
@@ -125,34 +118,31 @@ export const Friends = () => {
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className={`relative overflow-hidden ${isNeo ? 'rounded-none border-2 border-black' : 'rounded-3xl'}`}
+        className="relative overflow-hidden rounded-3xl"
       >
-        <div className={`absolute inset-0 ${isNeo ? 'bg-pink-200' : 'bg-gradient-to-r from-purple-600 to-pink-600'}`} />
-        <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] filter contrast-125 brightness-100" />
+        <div className="absolute inset-0 bg-[var(--color-fintech-primary)] opacity-90" />
+        <div className="absolute inset-0 opacity-10 bg-[url('/noise.svg')] filter contrast-125 brightness-100 mix-blend-overlay" />
 
         <div className="relative z-10 p-8 md:p-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-              <span className={`px-3 py-1 text-xs font-black uppercase tracking-widest ${isNeo ? 'bg-black text-white rounded-none' : 'bg-white/20 text-white backdrop-blur-md rounded-full'}`}>
+              <span className="px-3 py-1 text-xs font-bold uppercase tracking-widest bg-white/20 text-white backdrop-blur-md rounded-full shadow-sm">
                 Dashboard
               </span>
             </div>
-            <h1 className={`text-5xl md:text-7xl font-black tracking-tighter ${isNeo ? 'text-black' : 'text-white'}`}>
+            <h1 className="text-5xl md:text-7xl font-display font-black tracking-tight text-white">
               Friends
             </h1>
           </div>
 
           <div className="w-full md:w-auto relative">
-            <Search className={`absolute left-4 top-1/2 -translate-y-1/2 ${isNeo ? 'text-black' : 'text-white/60'}`} size={20} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-fintech-text-muted)]" size={20} />
             <input
               type="text"
               placeholder="Find a friend..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className={`pl-12 pr-4 py-4 outline-none transition-all w-full md:w-80 font-bold ${isNeo
-                ? 'bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-none placeholder:text-black/40'
-                : 'bg-white/10 border border-white/20 focus:bg-white/20 focus:border-white/30 backdrop-blur-md rounded-2xl text-white placeholder:text-white/40'
-                }`}
+              className="pl-12 pr-4 py-4 outline-none transition-all w-full md:w-80 font-semibold bg-[var(--color-fintech-bg-alt)] border border-[var(--color-fintech-border)] focus:ring-2 focus:ring-[var(--color-fintech-primary)]/20 rounded-2xl text-[var(--color-fintech-text)] placeholder-[var(--color-fintech-text-muted)] shadow-sm"
             />
           </div>
         </div>
@@ -164,16 +154,13 @@ export const Friends = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className={`p-6 flex items-center justify-between ${isNeo
-            ? 'bg-emerald-100 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none'
-            : 'bg-emerald-500/10 border border-emerald-500/20 rounded-3xl'
-            }`}
+          className="p-6 flex items-center justify-between bg-[var(--color-fintech-primary)]/10 border border-[var(--color-fintech-primary)]/20 rounded-3xl shadow-sm"
         >
           <div>
-            <p className={`text-sm font-bold uppercase tracking-wider mb-1 ${isNeo ? 'text-black/60' : 'text-emerald-500'}`}>Total Owed to You</p>
-            <h3 className={`text-4xl font-black ${isNeo ? 'text-black' : 'text-emerald-500'}`}>{formatPrice(totalOwedToYou)}</h3>
+            <p className="text-sm font-semibold uppercase tracking-wider mb-1 text-[var(--color-fintech-primary)]">Total Owed to You</p>
+            <h3 className="text-4xl font-black text-[var(--color-fintech-primary)]">{formatPrice(totalOwedToYou)}</h3>
           </div>
-          <div className={`w-12 h-12 flex items-center justify-center ${isNeo ? 'bg-black text-white rounded-none' : 'bg-emerald-500 text-white rounded-full'}`}>
+          <div className="w-12 h-12 flex items-center justify-center bg-[var(--color-fintech-primary)] text-white rounded-full shadow-sm">
             <TrendingUp size={24} />
           </div>
         </motion.div>
@@ -182,16 +169,13 @@ export const Friends = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className={`p-6 flex items-center justify-between ${isNeo
-            ? 'bg-orange-100 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none'
-            : 'bg-orange-500/10 border border-orange-500/20 rounded-3xl'
-            }`}
+          className="p-6 flex items-center justify-between bg-red-50 border border-red-100 rounded-3xl shadow-sm"
         >
           <div>
-            <p className={`text-sm font-bold uppercase tracking-wider mb-1 ${isNeo ? 'text-black/60' : 'text-orange-500'}`}>Total You Owe</p>
-            <h3 className={`text-4xl font-black ${isNeo ? 'text-black' : 'text-orange-500'}`}>{formatPrice(totalYouOwe)}</h3>
+            <p className="text-sm font-semibold uppercase tracking-wider mb-1 text-red-500">Total You Owe</p>
+            <h3 className="text-4xl font-black text-red-500">{formatPrice(totalYouOwe)}</h3>
           </div>
-          <div className={`w-12 h-12 flex items-center justify-center ${isNeo ? 'bg-black text-white rounded-none' : 'bg-orange-500 text-white rounded-full'}`}>
+          <div className="w-12 h-12 flex items-center justify-center bg-red-500 text-white rounded-full shadow-sm">
             <TrendingDown size={24} />
           </div>
         </motion.div>
@@ -202,19 +186,13 @@ export const Friends = () => {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`p-4 flex items-center justify-between ${isNeo
-            ? 'bg-red-100 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none'
-            : 'bg-red-500/10 border border-red-500/20 rounded-2xl'
-            }`}
+          className="p-4 flex items-center justify-between bg-red-50 border border-red-100 rounded-2xl shadow-sm"
         >
-          <p className={`font-bold ${isNeo ? 'text-black' : 'text-red-400'}`}>{error}</p>
+          <p className="font-semibold text-red-600">{error}</p>
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className={`px-4 py-2 font-bold text-sm ${isNeo
-              ? 'bg-black text-white hover:bg-gray-800 rounded-none'
-              : 'bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg'
-              }`}
+            className="px-4 py-2 font-bold text-sm bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors"
           >
             Retry
           </button>
@@ -243,10 +221,7 @@ export const Friends = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ delay: index * 0.05 }}
-                className={`group relative overflow-hidden flex flex-col transition-all duration-300 ${isNeo
-                  ? 'bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-none'
-                  : 'bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 backdrop-blur-sm rounded-3xl'
-                  }`}
+                className="group relative overflow-hidden flex flex-col transition-all duration-300 bg-[var(--color-fintech-bg)] border border-[var(--color-fintech-border)] hover:border-[var(--color-fintech-primary)]/50 shadow-sm hover:shadow-md rounded-3xl"
               >
                 <button
                   type="button"
@@ -257,22 +232,22 @@ export const Friends = () => {
 
                   <div className="flex items-start justify-between mb-4">
                     {getAvatarContent(friend.userImageUrl, friend.userName, 'lg')}
-                    <div className={`px-3 py-1 text-xs font-bold uppercase tracking-wider ${friend.netBalance > 0
-                      ? (isNeo ? 'bg-emerald-200 text-black border border-black' : 'bg-emerald-500/20 text-emerald-400')
+                    <div className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full shadow-sm ${friend.netBalance > 0
+                      ? 'bg-[var(--color-fintech-primary)]/10 text-[var(--color-fintech-primary)] border border-[var(--color-fintech-primary)]/20'
                       : friend.netBalance < 0
-                        ? (isNeo ? 'bg-orange-200 text-black border border-black' : 'bg-orange-500/20 text-orange-400')
-                        : (isNeo ? 'bg-gray-200 text-black border border-black' : 'bg-white/10 text-white/60')
-                      } ${isNeo ? 'rounded-none' : 'rounded-full'}`}>
+                        ? 'bg-red-50 text-red-600 border border-red-100'
+                        : 'bg-[var(--color-fintech-border)] text-[var(--color-fintech-text-muted)] border border-[var(--color-fintech-border)]'
+                      }`}>
                       {friend.netBalance > 0 ? 'Owes You' : friend.netBalance < 0 ? 'You Owe' : 'Settled'}
                     </div>
                   </div>
 
-                  <h3 className="text-2xl font-bold mb-1">{friend.userName}</h3>
-                  <p className={`text-3xl font-black ${friend.netBalance > 0
-                    ? 'text-emerald-500'
+                  <h3 className="text-xl font-display font-bold mb-1 text-[var(--color-fintech-text)]">{friend.userName}</h3>
+                  <p className={`text-2xl font-black ${friend.netBalance > 0
+                    ? 'text-[var(--color-fintech-primary)]'
                     : friend.netBalance < 0
-                      ? 'text-orange-500'
-                      : 'opacity-30'
+                      ? 'text-red-500'
+                      : 'text-[var(--color-fintech-text-muted)]'
                     }`}>
                     {friend.netBalance > 0 ? '+' : friend.netBalance < 0 ? '-' : ''}{formatPrice(friend.netBalance)}
                   </p>
@@ -284,29 +259,26 @@ export const Friends = () => {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      className={`border-t ${isNeo ? 'border-black bg-gray-50' : 'border-white/10 bg-black/20'}`}
+                      className="border-t border-[var(--color-fintech-border)] bg-[var(--color-fintech-bg-alt)]"
                     >
                       <div className="p-4 space-y-3">
-                        <p className="text-xs font-bold uppercase opacity-50 tracking-wider">Group Breakdown</p>
+                        <p className="text-xs font-bold uppercase text-[var(--color-fintech-text-muted)] tracking-wider">Group Breakdown</p>
                         {friend.breakdown.map(g => (
                           <div key={g.groupId} className="flex justify-between items-center text-sm">
                             <div className="flex items-center gap-3">
                               {getAvatarContent(g.imageUrl, g.groupName, 'sm')}
-                              <span className="font-medium opacity-80">{g.groupName}</span>
+                              <span className="font-semibold text-[var(--color-fintech-text)]">{g.groupName}</span>
                             </div>
-                            <span className={`font-bold ${g.balance > 0 ? 'text-emerald-500' : g.balance < 0 ? 'text-orange-500' : 'opacity-50'}`}>
+                            <span className={`font-bold ${g.balance > 0 ? 'text-[var(--color-fintech-primary)]' : g.balance < 0 ? 'text-red-500' : 'text-[var(--color-fintech-text-muted)]'}`}>
                               {g.balance > 0 ? '+' : g.balance < 0 ? '-' : ''}{formatPrice(g.balance)}
                             </span>
                           </div>
                         ))}
                         {friend.breakdown.length === 0 && (
-                          <p className="text-sm opacity-50 italic">No active groups</p>
+                          <p className="text-sm text-[var(--color-fintech-text-muted)] italic">No active groups</p>
                         )}
-                        <button type="button" className={`w-full mt-4 py-2 text-sm font-bold flex items-center justify-center gap-2 transition-colors ${isNeo
-                          ? 'bg-black text-white hover:bg-gray-800 rounded-none'
-                          : 'bg-white/10 hover:bg-white/20 rounded-xl'
-                          }`}>
-                          View Details <ArrowRight size={14} />
+                        <button type="button" className="w-full mt-4 py-2.5 text-sm font-bold flex items-center justify-center gap-2 transition-colors bg-[var(--color-fintech-primary)] hover:bg-[var(--color-fintech-primary-dark)] text-white rounded-xl shadow-sm">
+                          View Details <ArrowRight size={16} />
                         </button>
                       </div>
                     </motion.div>

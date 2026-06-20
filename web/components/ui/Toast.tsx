@@ -2,17 +2,10 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, CheckCircle, AlertCircle, Info } from 'lucide-react';
 import { useToast, Toast } from '../../contexts/ToastContext';
-import { useTheme } from '../../contexts/ThemeContext';
-import { THEMES } from '../../constants';
-
 import { useEffect } from 'react';
 
 const ToastItem: React.FC<{ toast: Toast }> = ({ toast }) => {
   const { removeToast } = useToast();
-  const { style, mode } = useTheme();
-
-  const isNeo = style === THEMES.NEOBRUTALISM;
-  const isDark = mode === 'dark';
 
   useEffect(() => {
     if (toast.duration && toast.duration > 0) {
@@ -30,15 +23,9 @@ const ToastItem: React.FC<{ toast: Toast }> = ({ toast }) => {
   };
 
   const colors = {
-    success: isNeo
-      ? 'bg-[#00cc88] text-black border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none'
-      : `bg-green-500/90 text-white backdrop-blur-md shadow-lg rounded-lg border ${isDark ? 'border-green-500/30' : 'border-white/20'}`,
-    error: isNeo
-      ? 'bg-[#ff5555] text-black border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none'
-      : `bg-red-500/90 text-white backdrop-blur-md shadow-lg rounded-lg border ${isDark ? 'border-red-500/30' : 'border-white/20'}`,
-    info: isNeo
-      ? 'bg-[#8855ff] text-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none'
-      : `bg-blue-500/90 text-white backdrop-blur-md shadow-lg rounded-lg border ${isDark ? 'border-blue-500/30' : 'border-white/20'}`,
+    success: 'bg-emerald-500/90 text-white shadow-lg rounded-xl border border-emerald-600',
+    error: 'bg-red-500/90 text-white shadow-lg rounded-xl border border-red-600',
+    info: 'bg-blue-500/90 text-white shadow-lg rounded-xl border border-blue-600',
   };
 
   return (

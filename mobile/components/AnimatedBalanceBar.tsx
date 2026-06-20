@@ -4,11 +4,9 @@ import {
   Text,
   Animated,
   StyleSheet,
-  Dimensions,
 } from 'react-native';
-import { Colors, Typography, Spacing, Radii } from '../theme/colors';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+import { useTheme } from 'react-native-paper';
+import { Typography, Spacing, Radii } from '../theme/colors';
 
 interface BalanceBarProps {
   totalOwed: number;    // amount you owe others (negative)
@@ -25,6 +23,9 @@ export const AnimatedBalanceBar: React.FC<BalanceBarProps> = ({
   totalOwing,
   currency = '₹',
 }) => {
+  const theme = useTheme();
+  const customColors = (theme.colors as any).custom;
+  
   const animValue = useRef(new Animated.Value(0)).current;
   const net = totalOwing - totalOwed;
   const max = Math.max(totalOwed, totalOwing, 1);
@@ -49,6 +50,85 @@ export const AnimatedBalanceBar: React.FC<BalanceBarProps> = ({
     outputRange: ['0%', `${owingRatio * 100}%`],
   });
 
+  const styles = StyleSheet.create({
+    container: {
+      gap: Spacing.sm,
+    },
+    netRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    label: {
+      fontSize: Typography.sizes.sm,
+      fontFamily: Typography.fontFamily.medium,
+      color: customColors.textMuted,
+      letterSpacing: 0.5,
+      textTransform: 'uppercase',
+    },
+    netAmount: {
+      fontSize: Typography.sizes.xl,
+      fontFamily: Typography.fontFamily.bold,
+    },
+    barContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      height: 10,
+    },
+    barTrack: {
+      flex: 1,
+      height: 10,
+      borderRadius: Radii.full,
+      backgroundColor: 'rgba(128,128,128,0.15)',
+      overflow: 'hidden',
+    },
+    barFill: {
+      height: '100%',
+      borderRadius: Radii.full,
+    },
+    barOwed: {
+      backgroundColor: customColors.negative,
+      alignSelf: 'flex-end',
+      shadowColor: customColors.negative,
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.8,
+      shadowRadius: 4,
+    },
+    barOwing: {
+      backgroundColor: customColors.positive,
+      shadowColor: customColors.positive,
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.8,
+      shadowRadius: 4,
+    },
+    divider: {
+      width: 2,
+      height: 18,
+      backgroundColor: customColors.textMuted,
+      borderRadius: 1,
+    },
+    legend: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    legendItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+    },
+    dot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+    },
+    legendText: {
+      fontSize: Typography.sizes.xs,
+      fontFamily: Typography.fontFamily.regular,
+      color: customColors.textSecondary,
+    },
+  });
+
   return (
     <View style={styles.container}>
       {/* Net Balance */}
@@ -57,7 +137,7 @@ export const AnimatedBalanceBar: React.FC<BalanceBarProps> = ({
         <Text
           style={[
             styles.netAmount,
-            { color: net >= 0 ? Colors.positive : Colors.negative },
+            { color: net >= 0 ? customColors.positive : customColors.negative },
           ]}
         >
           {net >= 0 ? '+' : ''}{currency}{Math.abs(net).toFixed(2)}
@@ -95,93 +175,14 @@ export const AnimatedBalanceBar: React.FC<BalanceBarProps> = ({
       {/* Legend */}
       <View style={styles.legend}>
         <View style={styles.legendItem}>
-          <View style={[styles.dot, { backgroundColor: Colors.negative }]} />
+          <View style={[styles.dot, { backgroundColor: customColors.negative }]} />
           <Text style={styles.legendText}>You owe {currency}{totalOwed.toFixed(2)}</Text>
         </View>
         <View style={styles.legendItem}>
-          <View style={[styles.dot, { backgroundColor: Colors.positive }]} />
+          <View style={[styles.dot, { backgroundColor: customColors.positive }]} />
           <Text style={styles.legendText}>Owed to you {currency}{totalOwing.toFixed(2)}</Text>
         </View>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    gap: Spacing.sm,
-  },
-  netRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  label: {
-    fontSize: Typography.sizes.sm,
-    fontFamily: Typography.fontFamily.medium,
-    color: Colors.textMuted,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-  },
-  netAmount: {
-    fontSize: Typography.sizes.xl,
-    fontFamily: Typography.fontFamily.bold,
-  },
-  barContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    height: 10,
-  },
-  barTrack: {
-    flex: 1,
-    height: 10,
-    borderRadius: Radii.full,
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    overflow: 'hidden',
-  },
-  barFill: {
-    height: '100%',
-    borderRadius: Radii.full,
-  },
-  barOwed: {
-    backgroundColor: Colors.negative,
-    alignSelf: 'flex-end',
-    shadowColor: Colors.negative,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
-  },
-  barOwing: {
-    backgroundColor: Colors.positive,
-    shadowColor: Colors.positive,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
-  },
-  divider: {
-    width: 2,
-    height: 18,
-    backgroundColor: Colors.textMuted,
-    borderRadius: 1,
-  },
-  legend: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  legendText: {
-    fontSize: Typography.sizes.xs,
-    fontFamily: Typography.fontFamily.regular,
-    color: Colors.textSecondary,
-  },
-});

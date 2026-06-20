@@ -2,8 +2,6 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
-import { useTheme } from '../contexts/ThemeContext';
-import { THEMES } from '../constants';
 import { useNavigate } from 'react-router-dom';
 
 interface Props {
@@ -17,10 +15,7 @@ interface State {
 
 // Functional component to access hooks
 const ErrorFallback = ({ error, resetErrorBoundary }: { error: Error | null, resetErrorBoundary: () => void }) => {
-  const { style } = useTheme();
   const navigate = useNavigate();
-
-  const isNeo = style === THEMES.NEOBRUTALISM;
 
   const handleHome = () => {
     resetErrorBoundary();
@@ -31,7 +26,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }: { error: Error | null, res
     <div className="min-h-[60vh] flex items-center justify-center p-4">
       <Card className="max-w-md w-full text-center">
         <div className="flex flex-col items-center gap-4">
-          <div className={`p-4 rounded-full ${isNeo ? 'bg-red-100 border-2 border-black' : 'bg-red-500/10'}`}>
+          <div className="p-4 rounded-full bg-red-50 text-red-500">
             <AlertTriangle size={48} className="text-red-500" aria-hidden="true" />
           </div>
 

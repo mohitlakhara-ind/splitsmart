@@ -1,8 +1,6 @@
 import { AnimatePresence, motion, Variants } from 'framer-motion';
 import { X } from 'lucide-react';
 import React from 'react';
-import { THEMES } from '../../constants';
-import { useTheme } from '../../contexts/ThemeContext';
 
 interface ModalProps {
   isOpen: boolean;
@@ -13,7 +11,6 @@ interface ModalProps {
 }
 
 export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, footer }) => {
-  const { style, mode } = useTheme();
   const titleId = React.useId();
 
   const overlayVariants: Variants = {
@@ -21,36 +18,27 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
     visible: { opacity: 1 },
   };
 
-  const modalVariants: Variants = style === THEMES.NEOBRUTALISM ? {
-    hidden: { y: '100%', rotate: -5, opacity: 0 },
-    visible: {
-      y: 0,
-      rotate: 0,
-      opacity: 1,
-      transition: { type: 'spring', damping: 15, stiffness: 200 }
-    },
-    exit: { y: '100%', rotate: 5, opacity: 0 }
-  } : {
-    hidden: { scale: 0.8, opacity: 0, backdropFilter: 'blur(0px)' },
+  const modalVariants: Variants = {
+    hidden: { scale: 0.95, opacity: 0, y: 20 },
     visible: {
       scale: 1,
       opacity: 1,
-      backdropFilter: 'blur(10px)',
-      transition: { type: 'spring', damping: 20, stiffness: 300 }
+      y: 0,
+      transition: { type: 'spring', damping: 25, stiffness: 300 }
     },
-    exit: { scale: 0.8, opacity: 0 }
+    exit: { scale: 0.95, opacity: 0, y: 20 }
   };
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" role="dialog" aria-modal="true" aria-labelledby={titleId}>
           <motion.div
             variants={overlayVariants}
             initial="hidden"
             animate="visible"
             exit="hidden"
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
             onClick={onClose}
           />
           <motion.div
@@ -58,16 +46,18 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
             initial="hidden"
             animate="visible"
             exit="exit"
-            className={`relative w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] 
-              ${style === THEMES.NEOBRUTALISM
-                ? 'bg-white border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-none'
-                : 'bg-gray-900/80 border border-white/20 rounded-3xl shadow-2xl text-white'}`}
+            className="relative w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] bg-[var(--color-fintech-bg-alt)] border border-[var(--color-fintech-border)] rounded-3xl shadow-xl text-[var(--color-fintech-text)]"
           >
             {/* Header */}
-            <div className={`p-6 flex justify-between items-center ${style === THEMES.NEOBRUTALISM ? 'border-b-2 border-black bg-neo-main text-white' : 'border-b border-white/10 bg-white/5'}`}>
-              <h3 id={titleId} className={`text-2xl font-bold ${style === THEMES.NEOBRUTALISM ? 'uppercase font-mono tracking-tighter' : ''}`}>{title}</h3>
-              <button type="button" onClick={onClose} className="hover:rotate-90 transition-transform duration-200" aria-label="Close modal">
-                <X size={24} />
+            <div className="px-6 py-5 flex justify-between items-center border-b border-[var(--color-fintech-border)] bg-slate-50/50">
+              <h3 id={titleId} className="text-xl font-display font-bold text-[var(--color-fintech-text)]">{title}</h3>
+              <button 
+                type="button" 
+                onClick={onClose} 
+                className="p-2 -mr-2 text-[var(--color-fintech-text-muted)] hover:text-[var(--color-fintech-text)] hover:bg-[var(--color-fintech-border)] rounded-full transition-colors" 
+                aria-label="Close modal"
+              >
+                <X size={20} />
               </button>
             </div>
 
@@ -78,7 +68,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
 
             {/* Footer */}
             {footer && (
-              <div className={`p-6 pt-4 mt-auto flex justify-end gap-3 ${style === THEMES.NEOBRUTALISM ? 'border-t-2 border-black' : 'border-t border-white/10'}`}>
+              <div className="px-6 py-5 mt-auto flex justify-end gap-3 border-t border-[var(--color-fintech-border)] bg-slate-50/50">
                 {footer}
               </div>
             )}

@@ -14,8 +14,6 @@ import {
     XAxis,
     YAxis
 } from 'recharts';
-import { THEMES } from '../constants';
-import { useTheme } from '../contexts/ThemeContext';
 import { GroupAnalytics } from '../types';
 import { formatCurrency } from '../utils/formatters';
 import { Button } from './ui/Button';
@@ -42,8 +40,6 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
     onYearChange,
     onMonthChange
 }) => {
-    const { style, mode } = useTheme();
-
     // Generate year options (last 5 years)
     const currentYear = new Date().getFullYear();
     const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i);
@@ -76,11 +72,11 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
     return (
         <>
             {/* Timeframe Filter */}
-            <div className={`p-6 ${style === THEMES.NEOBRUTALISM ? 'bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10'}`}>
+            <div className="p-6 bg-[var(--color-fintech-bg-alt)] rounded-3xl shadow-sm border border-[var(--color-fintech-border)]">
                 <div className="flex flex-col gap-4">
-                    <div className="flex items-center gap-2">
-                        <Calendar size={20} className="opacity-60" />
-                        <span className="font-bold">Select Timeframe:</span>
+                    <div className="flex items-center gap-2 text-[var(--color-fintech-text-muted)]">
+                        <Calendar size={20} className="opacity-80" />
+                        <span className="font-semibold text-[var(--color-fintech-text)]">Select Timeframe:</span>
                     </div>
 
                     {/* Timeframe Type Selector */}
@@ -88,21 +84,21 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
                         <Button
                             onClick={() => onTimeframeChange('month')}
                             variant={timeframe === 'month' ? 'primary' : 'secondary'}
-                            className={`px-4 py-2 text-sm ${timeframe === 'month' ? '' : 'opacity-60'}`}
+                            className={`px-4 py-2 text-sm ${timeframe === 'month' ? '' : 'opacity-70 hover:opacity-100 bg-[var(--color-fintech-bg-alt)]'}`}
                         >
                             Specific Month
                         </Button>
                         <Button
                             onClick={() => onTimeframeChange('6months')}
                             variant={timeframe === '6months' ? 'primary' : 'secondary'}
-                            className={`px-4 py-2 text-sm ${timeframe === '6months' ? '' : 'opacity-60'}`}
+                            className={`px-4 py-2 text-sm ${timeframe === '6months' ? '' : 'opacity-70 hover:opacity-100 bg-[var(--color-fintech-bg-alt)]'}`}
                         >
                             Last 6 Months
                         </Button>
                         <Button
                             onClick={() => onTimeframeChange('year')}
                             variant={timeframe === 'year' ? 'primary' : 'secondary'}
-                            className={`px-4 py-2 text-sm ${timeframe === 'year' ? '' : 'opacity-60'}`}
+                            className={`px-4 py-2 text-sm ${timeframe === 'year' ? '' : 'opacity-70 hover:opacity-100 bg-[var(--color-fintech-bg-alt)]'}`}
                         >
                             Specific Year
                         </Button>
@@ -115,12 +111,7 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
                                 <select
                                     value={selectedMonth}
                                     onChange={(e) => onMonthChange(Number(e.target.value))}
-                                    className={`px-4 py-2 rounded-lg border font-medium ${style === THEMES.NEOBRUTALISM
-                                        ? 'border-2 border-black bg-white'
-                                        : mode === 'dark'
-                                            ? 'bg-gray-800 border-gray-700 text-white'
-                                            : 'bg-white border-gray-300'
-                                        }`}
+                                    className="px-4 py-2.5 rounded-xl border border-[var(--color-fintech-border)] bg-[var(--color-fintech-bg-alt)] text-[var(--color-fintech-text)] font-medium shadow-sm outline-none focus:border-[var(--color-fintech-primary)] focus:ring-2 focus:ring-[var(--color-fintech-primary)]/20 transition-all"
                                 >
                                     {monthOptions.map(month => (
                                         <option key={month.value} value={month.value}>
@@ -131,12 +122,7 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
                                 <select
                                     value={selectedYear}
                                     onChange={(e) => onYearChange(Number(e.target.value))}
-                                    className={`px-4 py-2 rounded-lg border font-medium ${style === THEMES.NEOBRUTALISM
-                                        ? 'border-2 border-black bg-white'
-                                        : mode === 'dark'
-                                            ? 'bg-gray-800 border-gray-700 text-white'
-                                            : 'bg-white border-gray-300'
-                                        }`}
+                                    className="px-4 py-2.5 rounded-xl border border-[var(--color-fintech-border)] bg-[var(--color-fintech-bg-alt)] text-[var(--color-fintech-text)] font-medium shadow-sm outline-none focus:border-[var(--color-fintech-primary)] focus:ring-2 focus:ring-[var(--color-fintech-primary)]/20 transition-all"
                                 >
                                     {yearOptions.map(year => (
                                         <option key={year} value={year}>
@@ -151,12 +137,7 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
                             <select
                                 value={selectedYear}
                                 onChange={(e) => onYearChange(Number(e.target.value))}
-                                className={`px-4 py-2 rounded-lg border font-medium ${style === THEMES.NEOBRUTALISM
-                                    ? 'border-2 border-black bg-white'
-                                    : mode === 'dark'
-                                        ? 'bg-gray-800 border-gray-700 text-white'
-                                        : 'bg-white border-gray-300'
-                                    }`}
+                                className="px-4 py-2.5 rounded-xl border border-[var(--color-fintech-border)] bg-[var(--color-fintech-bg-alt)] text-[var(--color-fintech-text)] font-medium shadow-sm outline-none focus:border-[var(--color-fintech-primary)] focus:ring-2 focus:ring-[var(--color-fintech-primary)]/20 transition-all"
                             >
                                 {yearOptions.map(year => (
                                     <option key={year} value={year}>
@@ -167,7 +148,7 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
                         )}
 
                         {timeframe === '6months' && (
-                            <p className="text-sm opacity-70">
+                            <p className="text-sm font-medium text-[var(--color-fintech-text-muted)] bg-[var(--color-fintech-bg)] px-4 py-2.5 rounded-xl border border-[var(--color-fintech-border)]">
                                 Showing last 6 months from today
                             </p>
                         )}
@@ -177,27 +158,29 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
 
             {/* Summary Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className={`p-6 text-center ${style === THEMES.NEOBRUTALISM ? 'bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10'}`}>
-                    <p className="text-xs font-bold opacity-50 uppercase tracking-wider mb-2">Total Expenses</p>
-                    <p className="text-3xl font-black">{formatCurrency(analytics.totalExpenses, groupCurrency)}</p>
-                    <p className="text-xs opacity-50 mt-1">{analytics.expenseCount} transactions</p>
+                <div className="p-6 text-center bg-[var(--color-fintech-bg-alt)] rounded-2xl shadow-sm border border-[var(--color-fintech-border)]">
+                    <p className="text-xs font-semibold text-[var(--color-fintech-text-muted)] uppercase tracking-wider mb-2">Total Expenses</p>
+                    <p className="text-3xl font-display font-bold text-[var(--color-fintech-text)]">{formatCurrency(analytics.totalExpenses, groupCurrency)}</p>
+                    <p className="text-xs text-[var(--color-fintech-text-muted)] mt-1 font-medium">{analytics.expenseCount} transactions</p>
                 </div>
-                <div className={`p-6 text-center ${style === THEMES.NEOBRUTALISM ? 'bg-blue-50 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-blue-500/10 backdrop-blur-sm rounded-2xl border border-blue-500/20'}`}>
-                    <p className="text-xs font-bold opacity-50 uppercase tracking-wider mb-2">Average Expense</p>
-                    <p className="text-3xl font-black text-blue-600">{formatCurrency(analytics.avgExpenseAmount, groupCurrency)}</p>
+                <div className="p-6 text-center bg-blue-50 rounded-2xl border border-blue-100">
+                    <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider mb-2">Average Expense</p>
+                    <p className="text-3xl font-display font-bold text-blue-700">{formatCurrency(analytics.avgExpenseAmount, groupCurrency)}</p>
                 </div>
-                <div className={`p-6 text-center ${style === THEMES.NEOBRUTALISM ? 'bg-purple-50 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-purple-500/10 backdrop-blur-sm rounded-2xl border border-purple-500/20'}`}>
-                    <p className="text-xs font-bold opacity-50 uppercase tracking-wider mb-2">Period</p>
-                    <p className="text-2xl font-black text-purple-600">{analytics.period}</p>
+                <div className="p-6 text-center bg-purple-50 rounded-2xl border border-purple-100">
+                    <p className="text-xs font-semibold text-purple-700 uppercase tracking-wider mb-2">Period</p>
+                    <p className="text-2xl font-display font-bold text-purple-700">{analytics.period}</p>
                 </div>
             </div>
 
             {/* Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Spending by Category - Pie Chart */}
-                <div className={`p-6 ${style === THEMES.NEOBRUTALISM ? 'bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10'}`}>
-                    <h3 className="text-xl font-black mb-4 flex items-center gap-2">
-                        <PieChartIcon size={20} />
+                <div className="p-6 bg-[var(--color-fintech-bg-alt)] rounded-3xl shadow-sm border border-[var(--color-fintech-border)]">
+                    <h3 className="text-xl font-display font-bold mb-6 flex items-center gap-2 text-[var(--color-fintech-text)]">
+                        <div className="w-8 h-8 rounded-full bg-[var(--color-fintech-primary)]/10 flex items-center justify-center text-[var(--color-fintech-primary)]">
+                            <PieChartIcon size={16} />
+                        </div>
                         Spending by Category
                     </h3>
                     {analytics.topCategories.length > 0 ? (
@@ -214,8 +197,8 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
                                         fill="#8884d8"
                                         dataKey="amount"
                                         nameKey="category"
-                                        stroke={style === THEMES.NEOBRUTALISM ? 'black' : 'none'}
-                                        strokeWidth={style === THEMES.NEOBRUTALISM ? 2 : 0}
+                                        stroke="white"
+                                        strokeWidth={2}
                                     >
                                         {analytics.topCategories.map((entry, index) => (
                                             <Cell key={`cell-${index}`} fill={['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'][index % 8]} />
@@ -224,29 +207,33 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
                                     <Tooltip
                                         formatter={(value: number) => formatCurrency(value, groupCurrency)}
                                         contentStyle={{
-                                            backgroundColor: mode === 'dark' ? '#333' : '#fff',
-                                            borderRadius: style === THEMES.GLASSMORPHISM ? '12px' : '0px',
-                                            border: style === THEMES.NEOBRUTALISM ? '2px solid black' : 'none',
+                                            backgroundColor: '#fff',
+                                            borderRadius: '12px',
+                                            border: '1px solid #e2e8f0',
+                                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                                            fontWeight: 500
                                         }}
                                     />
                                     <Legend
                                         formatter={(value, entry: any) => `${value} (${entry.payload.count})`}
-                                        wrapperStyle={{ fontSize: '12px' }}
+                                        wrapperStyle={{ fontSize: '13px', fontWeight: 500 }}
                                     />
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
                     ) : (
-                        <div className="h-[300px] flex items-center justify-center opacity-50">
-                            <p>No category data available</p>
+                        <div className="h-[300px] flex items-center justify-center opacity-50 bg-[var(--color-fintech-bg)] rounded-2xl border border-dashed border-[var(--color-fintech-border)]">
+                            <p className="font-medium text-[var(--color-fintech-text-muted)]">No category data available</p>
                         </div>
                     )}
                 </div>
 
                 {/* Spending Trends - Area Chart */}
-                <div className={`p-6 ${style === THEMES.NEOBRUTALISM ? 'bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10'}`}>
-                    <h3 className="text-xl font-black mb-4 flex items-center gap-2">
-                        <TrendingUp size={20} />
+                <div className="p-6 bg-[var(--color-fintech-bg-alt)] rounded-3xl shadow-sm border border-[var(--color-fintech-border)]">
+                    <h3 className="text-xl font-display font-bold mb-6 flex items-center gap-2 text-[var(--color-fintech-text)]">
+                        <div className="w-8 h-8 rounded-full bg-[var(--color-fintech-primary)]/10 flex items-center justify-center text-[var(--color-fintech-primary)]">
+                            <TrendingUp size={16} />
+                        </div>
                         Spending Trends
                     </h3>
                     {analytics.expenseTrends.length > 0 ? (
@@ -255,19 +242,19 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
                                 <AreaChart data={analytics.expenseTrends}>
                                     <defs>
                                         <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8} />
-                                            <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                                            <stop offset="5%" stopColor="#0d9488" stopOpacity={0.4} />
+                                            <stop offset="95%" stopColor="#0d9488" stopOpacity={0} />
                                         </linearGradient>
                                     </defs>
                                     <XAxis
                                         dataKey="date"
-                                        tick={{ fill: mode === 'dark' ? '#fff' : '#000', fontSize: 10 }}
+                                        tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }}
                                         axisLine={false}
                                         tickLine={false}
                                         tickFormatter={(value) => new Date(value).getDate().toString()}
                                     />
                                     <YAxis
-                                        tick={{ fill: mode === 'dark' ? '#fff' : '#000' }}
+                                        tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }}
                                         axisLine={false}
                                         tickLine={false}
                                     />
@@ -275,16 +262,18 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
                                         formatter={(value: number) => [formatCurrency(value, groupCurrency), 'Amount']}
                                         labelFormatter={(label) => new Date(label).toLocaleDateString()}
                                         contentStyle={{
-                                            backgroundColor: mode === 'dark' ? '#333' : '#fff',
-                                            borderRadius: style === THEMES.GLASSMORPHISM ? '12px' : '0px',
-                                            border: style === THEMES.NEOBRUTALISM ? '2px solid black' : 'none',
+                                            backgroundColor: '#fff',
+                                            borderRadius: '12px',
+                                            border: '1px solid #e2e8f0',
+                                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                                            fontWeight: 500
                                         }}
                                     />
                                     <Area
                                         type="monotone"
                                         dataKey="amount"
-                                        stroke="#8b5cf6"
-                                        strokeWidth={style === THEMES.NEOBRUTALISM ? 3 : 2}
+                                        stroke="#0d9488"
+                                        strokeWidth={3}
                                         fillOpacity={1}
                                         fill="url(#colorAmount)"
                                     />
@@ -292,17 +281,19 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
                             </ResponsiveContainer>
                         </div>
                     ) : (
-                        <div className="h-[300px] flex items-center justify-center opacity-50">
-                            <p>No trend data available</p>
+                        <div className="h-[300px] flex items-center justify-center opacity-50 bg-[var(--color-fintech-bg)] rounded-2xl border border-dashed border-[var(--color-fintech-border)]">
+                            <p className="font-medium text-[var(--color-fintech-text-muted)]">No trend data available</p>
                         </div>
                     )}
                 </div>
             </div>
 
             {/* Member Contributions Timeline */}
-            <div className={`p-6 ${style === THEMES.NEOBRUTALISM ? 'bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10'}`}>
-                <h3 className="text-xl font-black mb-4 flex items-center gap-2">
-                    <TrendingUp size={20} />
+            <div className="p-6 bg-[var(--color-fintech-bg-alt)] rounded-3xl shadow-sm border border-[var(--color-fintech-border)]">
+                <h3 className="text-xl font-display font-bold mb-6 flex items-center gap-2 text-[var(--color-fintech-text)]">
+                    <div className="w-8 h-8 rounded-full bg-[var(--color-fintech-primary)]/10 flex items-center justify-center text-[var(--color-fintech-primary)]">
+                        <TrendingUp size={16} />
+                    </div>
                     Member Contributions Over Time
                 </h3>
                 {analytics.contributionTimeline && analytics.contributionTimeline.length > 0 ? (
@@ -311,7 +302,7 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
                             <LineChart data={analytics.contributionTimeline}>
                                 <XAxis
                                     dataKey="date"
-                                    tick={{ fill: mode === 'dark' ? '#fff' : '#000', fontSize: 10 }}
+                                    tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }}
                                     axisLine={false}
                                     tickLine={false}
                                     tickFormatter={(value) => {
@@ -320,7 +311,7 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
                                     }}
                                 />
                                 <YAxis
-                                    tick={{ fill: mode === 'dark' ? '#fff' : '#000' }}
+                                    tick={{ fill: '#64748b', fontSize: 11, fontWeight: 500 }}
                                     axisLine={false}
                                     tickLine={false}
                                     tickFormatter={(value) => `${groupCurrency} ${value.toLocaleString()}`}
@@ -329,26 +320,28 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
                                     formatter={(value: number, name: string) => [formatCurrency(value, groupCurrency), name]}
                                     labelFormatter={(label) => new Date(label).toLocaleDateString()}
                                     contentStyle={{
-                                        backgroundColor: mode === 'dark' ? '#333' : '#fff',
-                                        borderRadius: style === THEMES.GLASSMORPHISM ? '12px' : '0px',
-                                        border: style === THEMES.NEOBRUTALISM ? '2px solid black' : 'none',
+                                        backgroundColor: '#fff',
+                                        borderRadius: '12px',
+                                        border: '1px solid #e2e8f0',
+                                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                                        fontWeight: 500
                                     }}
                                 />
-                                <Legend />
+                                <Legend wrapperStyle={{ fontSize: '13px', fontWeight: 500, paddingTop: '16px' }} />
 
                                 {/* Total Expenses Line - Thicker and distinct */}
                                 <Line
                                     type="monotone"
                                     dataKey="Total Expenses"
-                                    stroke="#8b5cf6"
-                                    strokeWidth={style === THEMES.NEOBRUTALISM ? 4 : 3}
-                                    dot={{ r: 4 }}
+                                    stroke="#0f172a"
+                                    strokeWidth={4}
+                                    dot={{ r: 4, strokeWidth: 2 }}
                                     activeDot={{ r: 6 }}
                                 />
 
                                 {/* Individual Member Lines */}
                                 {analytics.memberContributions.map((member, idx) => {
-                                    const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4', '#84cc16', '#f97316'];
+                                    const colors = ['#0d9488', '#3b82f6', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4', '#84cc16', '#f97316'];
                                     const color = colors[idx % colors.length];
                                     return (
                                         <Line
@@ -356,7 +349,7 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
                                             type="monotone"
                                             dataKey={member.userName}
                                             stroke={color}
-                                            strokeWidth={style === THEMES.NEOBRUTALISM ? 3 : 2}
+                                            strokeWidth={2.5}
                                             dot={{ r: 3 }}
                                             activeDot={{ r: 5 }}
                                         />
@@ -366,8 +359,8 @@ export const AnalyticsContent: React.FC<AnalyticsContentProps> = ({
                         </ResponsiveContainer>
                     </div>
                 ) : (
-                    <div className="h-[400px] flex items-center justify-center opacity-50">
-                        <p>No member contribution data available</p>
+                    <div className="h-[400px] flex items-center justify-center opacity-50 bg-[var(--color-fintech-bg)] rounded-2xl border border-dashed border-[var(--color-fintech-border)]">
+                        <p className="font-medium text-[var(--color-fintech-text-muted)]">No member contribution data available</p>
                     </div>
                 )}
             </div>

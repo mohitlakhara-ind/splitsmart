@@ -1,7 +1,5 @@
 import { AlertTriangle, Info } from 'lucide-react';
 import React from 'react';
-import { THEMES } from '../../constants';
-import { useTheme } from '../../contexts/ThemeContext';
 import { Button } from './Button';
 import { Modal } from './Modal';
 
@@ -28,29 +26,26 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   onConfirm,
   onCancel,
 }) => {
-  const { style } = useTheme();
-  const isNeo = style === THEMES.NEOBRUTALISM;
-
   // Determine styles based on variant
   const getIcon = () => {
     switch (variant) {
       case 'danger':
-        return <AlertTriangle size={32} className={isNeo ? 'text-black' : 'text-red-500'} />;
+        return <AlertTriangle size={32} className="text-red-600" />;
       case 'warning':
-        return <AlertTriangle size={32} className={isNeo ? 'text-black' : 'text-yellow-500'} />;
+        return <AlertTriangle size={32} className="text-yellow-600" />;
       case 'info':
-        return <Info size={32} className={isNeo ? 'text-black' : 'text-blue-500'} />;
+        return <Info size={32} className="text-blue-600" />;
     }
   };
 
   const getIconBg = () => {
     switch (variant) {
       case 'danger':
-        return isNeo ? 'bg-red-400 border-2 border-black rounded-none' : 'bg-red-500/20 rounded-full';
+        return 'bg-red-50 text-red-600 border border-red-100 rounded-2xl';
       case 'warning':
-        return isNeo ? 'bg-yellow-400 border-2 border-black rounded-none' : 'bg-yellow-500/20 rounded-full';
+        return 'bg-yellow-50 text-yellow-600 border border-yellow-100 rounded-2xl';
       case 'info':
-        return isNeo ? 'bg-blue-400 border-2 border-black rounded-none' : 'bg-blue-500/20 rounded-full';
+        return 'bg-blue-50 text-blue-600 border border-blue-100 rounded-2xl';
     }
   };
 
@@ -86,7 +81,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           {getIcon()}
         </div>
         <div>
-          <p className={`text-base leading-relaxed ${isNeo ? 'text-black' : 'text-white/80'}`}>
+          <p className="text-base leading-relaxed text-[var(--color-fintech-text-muted)]">
             {description}
           </p>
         </div>
