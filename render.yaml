@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: splitsmart-backend
+    env: node
+    rootDir: backend-node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8000
+      - key: MONGODB_URL
+        value: mongodb+srv://mohitlakhara78_db_user:jcObqlkZezjRaC1z@cluster0.ycuj3wf.mongodb.net/?appName=Cluster0
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOW_ALL_ORIGINS
+        value: "true"
+      - key: ALLOWED_ORIGINS
+        value: "*"
+      - key: FIREBASE_PROJECT_ID
+        value: your-firebase-project-id
+      - key: FIREBASE_SERVICE_ACCOUNT_PATH
+        value: ./firebase-service-account.json
