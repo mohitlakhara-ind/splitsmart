@@ -12,6 +12,8 @@ const SignupScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [securePassword, setSecurePassword] = useState(true);
+  const [secureConfirmPassword, setSecureConfirmPassword] = useState(true);
   const { signup } = useContext(AuthContext);
   const theme = useTheme();
   const customColors = theme.colors.custom;
@@ -134,11 +136,18 @@ const SignupScreen = ({ navigation }) => {
             value={password}
             onChangeText={setPassword}
             style={styles.input}
-            secureTextEntry
+            secureTextEntry={securePassword}
             mode="outlined"
             activeOutlineColor={theme.colors.primary}
             outlineColor={theme.colors.outline}
             accessibilityLabel="Password"
+            right={
+              <TextInput.Icon
+                icon={securePassword ? "eye" : "eye-off"}
+                onPress={() => setSecurePassword(!securePassword)}
+                forceTextInputFocus={false}
+              />
+            }
           />
 
           <TextInput
@@ -146,11 +155,18 @@ const SignupScreen = ({ navigation }) => {
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             style={styles.input}
-            secureTextEntry
+            secureTextEntry={secureConfirmPassword}
             mode="outlined"
             activeOutlineColor={theme.colors.primary}
             outlineColor={theme.colors.outline}
             accessibilityLabel="Confirm Password"
+            right={
+              <TextInput.Icon
+                icon={secureConfirmPassword ? "eye" : "eye-off"}
+                onPress={() => setSecureConfirmPassword(!secureConfirmPassword)}
+                forceTextInputFocus={false}
+              />
+            }
           />
 
           <HapticButton

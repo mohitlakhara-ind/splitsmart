@@ -17,6 +17,8 @@ const app = express();
 // Initialize Services
 async function startApp() {
   await connectToMongo();
+  const { seedDefaultUser } = require('./database');
+  await seedDefaultUser();
   initializeFirebase();
 
 let allowedOrigins: string[] = [];

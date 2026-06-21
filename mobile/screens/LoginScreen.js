@@ -17,6 +17,7 @@ const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
   const { login, loginWithGoogle } = useContext(AuthContext);
   const theme = useTheme();
   const customColors = theme.colors.custom;
@@ -177,11 +178,18 @@ const LoginScreen = ({ navigation }) => {
             value={password}
             onChangeText={setPassword}
             style={styles.input}
-            secureTextEntry
+            secureTextEntry={secureTextEntry}
             mode="outlined"
             activeOutlineColor={theme.colors.primary}
             outlineColor={theme.colors.outline}
             accessibilityLabel="Password"
+            right={
+              <TextInput.Icon
+                icon={secureTextEntry ? "eye" : "eye-off"}
+                onPress={() => setSecureTextEntry(!secureTextEntry)}
+                forceTextInputFocus={false}
+              />
+            }
           />
 
           <HapticButton
