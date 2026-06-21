@@ -62,7 +62,7 @@ export const Sidebar = () => {
         )}
 
         <a
-          href="/splitsmart.apk"
+          href="/splitwiser.apk"
           download
           className="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-dashed border-[var(--color-fintech-border)] text-xs text-[var(--color-fintech-text-muted)] hover:bg-[var(--color-fintech-bg-alt)] hover:text-[var(--color-fintech-text)] transition-all font-semibold"
         >

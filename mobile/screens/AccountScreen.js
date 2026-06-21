@@ -216,7 +216,7 @@ const AccountScreen = ({ navigation }) => {
           />
         </GlassCard>
 
-        <Text style={styles.versionText}>SplitSmart v1.0.0</Text>
+        <Text style={styles.versionText}>Splitwiser v1.0.0</Text>
       </ScrollView>
     </View>
   );

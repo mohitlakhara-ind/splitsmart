@@ -11,11 +11,18 @@ const router = Router();
 
 // Middleware to restrict access to local device only
 function localOnly(req: Request, res: Response, next: NextFunction): void {
-  const ip = req.ip || req.socket.remoteAddress;
-  const isLocal = ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1' || ip === 'localhost';
+  const forwardedFor = req.headers['x-forwarded-for'];
+  let clientIp = req.ip || req.socket.remoteAddress;
+  
+  if (forwardedFor) {
+    const forwardedIps = typeof forwardedFor === 'string' ? forwardedFor.split(',') : forwardedFor;
+    clientIp = forwardedIps[0].trim();
+  }
+
+  const isLocal = clientIp === '127.0.0.1' || clientIp === '::1' || clientIp === '::ffff:127.0.0.1' || clientIp === 'localhost';
 
   if (!isLocal) {
-    logger.warn(`Unauthorized access attempt to admin routes from IP: ${ip}`);
+    logger.warn(`Unauthorized access attempt to admin routes from IP: ${clientIp}`);
     res.status(403).json({
       error: 'Forbidden',
       detail: 'Access denied: Admin routes can only be accessed from the local machine (localhost).'

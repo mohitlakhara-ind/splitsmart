@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import axios from 'axios';
 import { config, logger } from './config';
 import { connectToMongo, closeMongoConnection } from './database';
 import { initializeFirebase } from './firebase';
@@ -83,6 +84,7 @@ const PORT = config.port;
 
   const server = app.listen(PORT, () => {
     logger.info(`Server running on port ${PORT}`);
+    startKeepAlive();
   });
 
   // Graceful shutdown
@@ -100,6 +102,37 @@ const PORT = config.port;
       process.exit(0);
     });
   });
+}
+
+// Keep-alive function for Render free tier
+function startKeepAlive() {
+  const selfUrl = process.env.SELF_URL || 'https://splitsmart-gmfd.onrender.com';
+  if (!selfUrl) return;
+
+  // Render free tier spin down is 15 minutes of inactivity.
+  // We ping every 14 minutes.
+  const INTERVAL = 14 * 60 * 1000; 
+
+  logger.info(`Starting keep-alive ping routine targeting ${selfUrl}/health`);
+  
+  // Initial ping after 1 minute
+  setTimeout(() => {
+    pingSelf(selfUrl);
+  }, 60000);
+
+  setInterval(() => {
+    pingSelf(selfUrl);
+  }, INTERVAL);
+}
+
+async function pingSelf(url: string) {
+  try {
+    logger.info(`Sending keep-alive ping to ${url}/health`);
+    const res = await axios.get(`${url}/health`);
+    logger.info(`Keep-alive ping successful: status ${res.status}`);
+  } catch (err: any) {
+    logger.error(`Keep-alive ping failed: ${err.message}`);
+  }
 }
 
 startApp().catch(err => {

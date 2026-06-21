@@ -59,7 +59,7 @@ export const Landing = () => {
               <CreditCard size={18} strokeWidth={2.5} />
             </div>
             <span className="text-xl font-display font-black tracking-tight text-[var(--color-fintech-text)]">
-              SplitSmart
+              Splitwiser
             </span>
           </Link>
 
@@ -86,7 +86,7 @@ export const Landing = () => {
         >
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--color-fintech-primary)]/10 text-[var(--color-fintech-primary)] text-xs font-bold border border-[var(--color-fintech-primary)]/20">
             <Sparkles size={12} />
-            <span>Introducing SplitSmart 2.0</span>
+            <span>Introducing Splitwiser 2.0</span>
           </div>
 
           <h1 className="text-5xl md:text-6xl font-display font-black tracking-tight leading-[1.08] text-[var(--color-fintech-text)]">
@@ -104,7 +104,7 @@ export const Landing = () => {
               </Button>
             </Link>
             <a 
-              href="/splitsmart.apk" 
+              href="/splitwiser.apk" 
               download 
               className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-[var(--color-fintech-bg-alt)] border border-[var(--color-fintech-border)] hover:bg-[var(--color-fintech-border)] text-[var(--color-fintech-text)] font-semibold transition-all shadow-sm text-sm group"
             >
@@ -339,7 +339,7 @@ export const Landing = () => {
           
           <div className="space-y-4 max-w-lg z-10 text-center md:text-left">
             <h2 className="text-3xl md:text-4xl font-display font-black tracking-tight leading-tight">
-              Get SplitSmart on your Android phone
+              Get Splitwiser on your Android phone
             </h2>
             <p className="text-white/80 text-sm md:text-base font-medium">
               Take the mobile application with you on trips and dinners. Download our ready-to-use Android package (APK) now.
@@ -348,7 +348,7 @@ export const Landing = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto z-10">
             <a 
-              href="/splitsmart.apk" 
+              href="/splitwiser.apk" 
               download 
               className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-3 px-6 py-4 bg-white text-[var(--color-fintech-primary)] hover:bg-neutral-100 font-bold rounded-2xl shadow-lg transition-all text-sm group"
             >
@@ -374,12 +374,12 @@ export const Landing = () => {
               <CreditCard size={14} strokeWidth={2.5} />
             </div>
             <span className="text-base font-display font-black tracking-tight text-[var(--color-fintech-text)]">
-              SplitSmart
+              Splitwiser
             </span>
           </div>
 
           <p className="text-xs text-[var(--color-fintech-text-muted)] font-medium text-center md:text-right">
-            © 2026 SplitSmart Inc. All rights reserved. Google & Firebase are trademarks of Google LLC.
+            © 2026 Splitwiser Inc. All rights reserved. Google & Firebase are trademarks of Google LLC.
           </p>
         </div>
       </footer>

@@ -97,7 +97,7 @@ const SignupScreen = ({ navigation }) => {
     >
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <View style={styles.brandContainer}>
-          <Text style={styles.logoText}>SplitSmart</Text>
+          <Text style={styles.logoText}>Splitwiser</Text>
           <Text style={styles.subtitle}>Join us to start splitting expenses easily</Text>
         </View>
 

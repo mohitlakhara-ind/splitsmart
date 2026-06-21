@@ -1,4 +1,4 @@
-# SplitSmart — Smart Group Expense Manager
+# Splitwiser — Smart Group Expense Manager
 
 > Built by [Mohit Lakhara](https://github.com/mohitlakhara-ind) | React Native / Expo · TypeScript · FastAPI
 
@@ -92,7 +92,7 @@ uvicorn main:app --reload
 ## 📂 Project Structure
 
 ```
-splitsmart/
+splitwiser/
 ├── mobile/
 │   ├── app/              # Expo Router screens
 │   ├── components/       # Reusable UI (GlassCard, AnimatedBalanceBar)

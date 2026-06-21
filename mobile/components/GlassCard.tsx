@@ -11,7 +11,7 @@ interface GlassCardProps {
 }
 
 /**
- * GlassCard — SplitSmart's signature glassmorphism card component
+ * GlassCard — Splitwiser's signature glassmorphism card component
  * Reads from theme colors to support dark/light modes dynamically.
  */
 export const GlassCard: React.FC<GlassCardProps> = ({

@@ -19,6 +19,6 @@ services:
       - key: ALLOWED_ORIGINS
         value: "*"
       - key: FIREBASE_PROJECT_ID
-        value: splitwiser-25e34
+        value: splitsmart-app-18342
       - key: FIREBASE_SERVICE_ACCOUNT_PATH
         value: ./firebase-service-account.json

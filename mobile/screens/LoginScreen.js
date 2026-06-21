@@ -47,7 +47,7 @@ const LoginScreen = ({ navigation }) => {
       const success = await loginWithGoogle(idToken);
       setIsLoading(false);
       if (!success) {
-        Alert.alert('Login Failed', 'Authentication with SplitSmart server failed.');
+        Alert.alert('Login Failed', 'Authentication with Splitwiser server failed.');
       }
     } catch (error) {
       setIsLoading(false);
@@ -152,7 +152,7 @@ const LoginScreen = ({ navigation }) => {
     >
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <View style={styles.brandContainer}>
-          <Text style={styles.logoText}>SplitSmart</Text>
+          <Text style={styles.logoText}>Splitwiser</Text>
           <Text style={styles.subtitle}>Split bills smartly with friends & groups</Text>
         </View>
 

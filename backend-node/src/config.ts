@@ -4,7 +4,7 @@ import winston from 'winston';
 dotenv.config();
 
 export const config = {
-  mongodbUrl: process.env.MONGODB_URL || 'mongodb://localhost:27017/splitsmart',
+  mongodbUrl: process.env.MONGODB_URL || 'mongodb://localhost:27017/splitwiser',
   secretKey: process.env.SECRET_KEY || 'default-secret-key-change-me',
   firebaseProjectId: process.env.FIREBASE_PROJECT_ID,
   firebaseServiceAccountPath: process.env.FIREBASE_SERVICE_ACCOUNT_PATH || './firebase-service-account.json',

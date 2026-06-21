@@ -152,7 +152,7 @@ const GroupSettingsScreen = ({ route, navigation }) => {
       const code = group?.joinCode;
       if (!code) return;
       await Share.share({
-        message: `Join my group on SplitSmart! Use code ${code}`,
+        message: `Join my group on Splitwiser! Use code ${code}`,
       });
     } catch (e) {
       console.error("Share failed", e);

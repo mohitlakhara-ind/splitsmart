@@ -4,10 +4,10 @@
 This document outlines a recommended project structure for implementing the Splitwiser backend as a **monolithic application**. This structure promotes modularity, maintainability, and scalability within a single codebase. This example primarily assumes a Python-based environment (e.g., using FastAPI), but the principles can be adapted.
 
 ## Conceptual Root Directory Structure
-The backend code will reside within a dedicated root folder, for example, `splitwiser-backend/`.
+The backend code will reside within a dedicated root folder, for example, `splitsmart-backend/`.
 
 ```
-/splitwiser-backend/
+/splitsmart-backend/
 |-- /app/                        # Core application code
 |   |-- /api/                    # API endpoints and routing
 |   |   |-- __init__.py

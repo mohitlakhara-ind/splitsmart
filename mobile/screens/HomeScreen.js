@@ -140,7 +140,7 @@ const HomeScreen = ({ navigation }) => {
             onPress: async () => {
               try {
                 await Share.share({
-                  message: `Join my group "${newGroup.name}" on SplitSmart!\nUse this Join Code to join: ${newGroup.joinCode}`,
+                  message: `Join my group "${newGroup.name}" on Splitwiser!\nUse this Join Code to join: ${newGroup.joinCode}`,
                 });
               } catch (shareErr) {
                 console.error("Failed to open share sheet:", shareErr);

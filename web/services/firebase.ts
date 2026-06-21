@@ -1,14 +1,13 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyC4Ny4BSh3q4fNEVBGyw2u_FvLaxXukB8U",
-  authDomain: "splitwiser-25e34.firebaseapp.com",
-  projectId: "splitwiser-25e34",
-  storageBucket: "splitwiser-25e34.firebasestorage.app",
-  messagingSenderId: "323312632683",
-  appId: "1:323312632683:web:eef9ca7acc5c5a89ce422e",
+  apiKey: "AIzaSyCJGaidqikcXoc4gekxqZOS67psV6ls_Ek",
+  authDomain: "splitsmart-app-18342.firebaseapp.com",
+  projectId: "splitsmart-app-18342",
+  storageBucket: "splitsmart-app-18342.firebasestorage.app",
+  messagingSenderId: "14416515704",
+  appId: "1:14416515704:web:658356ad628d41802d138d",
   measurementId: "G-SDY9ZRV9V4"
 };
 
