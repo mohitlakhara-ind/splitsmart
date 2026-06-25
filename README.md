@@ -1,113 +1,102 @@
-# Splitwiser — Smart Group Expense Manager
+# Splitwiser (SplitSmart) 💸
 
-> Built by [Mohit Lakhara](https://github.com/mohitlakhara-ind) | React Native / Expo · TypeScript · FastAPI
+![Splitwiser Web Mockup](https://res.cloudinary.com/dhjkbcdfm/image/upload/v1782228409/portfolio_assets/mockup-splitwiser-desktop.png)
 
-A modern, dark-themed expense splitting app with AI-powered bill scanning, expense analytics, and one-tap settlement reminders. Built for friend groups, roommates, and travel squads.
+> **AI-Powered Group Expense Manager & Debt Simplification Platform**  
+> Built by [Mohit Lakhara](https://github.com/mohitlakhara-ind) | React Native (Expo) • React (Vite) • Node.js/Express • Mongoose (MongoDB)
+
+Splitwiser is a modern, cross-platform expense sharing application designed for roommates, travelers, and groups. It features glassmorphism dark UIs, automatic receipt scanning, a custom debt minimization graph algorithm, and one-tap payment nudge sheets.
 
 ---
 
 ## ✨ Features
 
-### Core
-- **Group Expense Tracking** — Create groups, add members, log expenses with equal/percentage/custom splits
-- **Debt Simplification** — Graph algorithm minimizes transactions to settle group debts
-- **Multi-Currency Support** — Handle expenses in INR, USD, EUR and more
-- **Receipt Management** — Attach images to expenses for reference
+### 🧠 Core Engineering
+* **Graph-Based Debt Simplification** – Custom algorithm analyzing group transactions to compute the minimal set of transfer payments required to settle all debts.
+* **Dual-Client Client Monorepo** – Seamlessly syncs data across a **React Native mobile client** and a **Vite React web app** connecting to a unified backend.
+* **JWT Authentication** – Secure sessions with access and refresh token rotation.
 
-### 🆕 Unique Features (Added by Mohit)
-1. **🤖 AI Bill Scanner** — Point your camera at any receipt. OCR extracts the merchant name, date, line items, and total amount — auto-fills the expense form in seconds.
-2. **📊 Expense Insights** — Monthly/weekly analytics dashboard showing category-wise spending with animated bar charts and member contribution breakdown.
-3. **📤 WhatsApp Settlement Reminder** — One tap generates a formatted payment reminder (with expense breakdown + UPI details) and opens the native share sheet for WhatsApp/SMS.
-
----
-
-## 🎨 Design System
-
-| Token | Value |
-|-------|-------|
-| Primary | `#7C3AED` (Violet 600) |
-| Accent | `#06B6D4` (Cyan 500) |
-| Background | `#0D0A1E` (Deep space dark) |
-| Style | Glassmorphism dark mode |
-| Typography | Poppins (400/500/600/700) |
+### 🤖 AI & FinTech
+* **AI Bill Scanner** – Utilizes OCR (OCR.space API) to scan printed receipts, parse merchants, totals, and line items, and auto-populate the expense forms.
+* **Interactive Spending Analytics** – Dark-theme charts visualizing spending trends, category distributions, and individual contributions.
+* **One-Tap Settlement Nudges** – Generates formatted UPI payment reminders with settlement data, launching the native share sheet for WhatsApp/SMS.
 
 ---
 
-## 🛠 Tech Stack
+## 🎨 Preview
 
-| Layer | Technology |
-|-------|------------|
-| Mobile | Expo SDK 52 + React Native |
-| Language | TypeScript |
-| Navigation | Expo Router (file-based) |
-| Styling | StyleSheet + custom theme system |
-| Backend | FastAPI (Python) |
-| Database | MongoDB |
-| Auth | JWT with refresh token rotation |
-| OCR | OCR.space API (free tier) |
-| State | React Context |
+<div align="center">
+  <img src="https://res.cloudinary.com/dhjkbcdfm/image/upload/v1782228409/portfolio_assets/mockup-splitwiser-app.png" width="320" alt="Splitwiser Mobile Client" />
+</div>
+
+---
+
+## 🛠️ Tech Stack
+
+| Component | Technology |
+| :--- | :--- |
+| **Mobile App** | React Native, Expo SDK 52, Expo Router (File-based) |
+| **Web Client** | React 18, Vite, TypeScript, Tailwind CSS |
+| **Backend API** | Node.js, Express, Mongoose |
+| **Database** | MongoDB (supports MongoDB Memory Server for testing) |
+| **Services** | OCR.space API, Firebase Admin SDK |
+
+---
+
+## 📂 Monorepo Structure
+
+```
+splitsmart/
+├── mobile/            # Expo React Native App
+│   ├── app/           # Expo Router file-based views
+│   ├── components/    # Glassmorphic UI & Balance cards
+│   ├── context/       # Authentication & groups state management
+│   └── api/           # Mobile API client layer
+├── web/               # React + Vite Web Client
+│   ├── src/           # Component layouts and pages
+│   └── services/      # Web API client layer
+└── backend-node/      # Express Node.js & TypeScript Backend
+    ├── src/           # API routes, middlewares, controllers
+    └── tsconfig.json  # TypeScript configuration
+```
 
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- Node.js 18+
-- Expo CLI (`npm install -g expo-cli`)
-- Expo Go app on your device
+### 1. Backend Setup (`backend-node`)
+```bash
+cd backend-node
+npm install
 
-### Frontend (Mobile App)
+# Setup environment variables
+cp .env.example .env
+# Fill in PORT, MONGODB_URI, JWT_SECRET, etc.
+
+# Run in development
+npm run dev
+```
+
+### 2. Mobile App Setup (`mobile`)
 ```bash
 cd mobile
 npm install
+
+# Start development packager
 npx expo start
 ```
+*Scan the QR code with Expo Go on your mobile device.*
 
-Scan the QR code with Expo Go (Android) or Camera app (iOS).
-
-### Backend (FastAPI)
+### 3. Web Client Setup (`web`)
 ```bash
-cd backend
-python -m venv venv
-venv\Scripts\activate  # Windows
-pip install -r requirements.txt
-cp .env.example .env   # Fill in MongoDB URI
-uvicorn main:app --reload
-```
+cd web
+npm install
 
----
-
-## 📱 Screens
-
-- **Onboarding** — Animated gradient splash with Google OAuth
-- **Home** — Balance overview with animated bar + recent expenses
-- **Groups** — Group cards with member avatars and quick settle CTA
-- **Add Expense** — Smart form with split calculator and receipt attachment
-- **Bill Scanner** *(new)* — OCR-powered receipt parser
-- **Insights** *(new)* — Animated spending charts and member breakdown
-- **Settlement Reminder** *(new)* — Pre-formatted WhatsApp/SMS messages
-
----
-
-## 📂 Project Structure
-
-```
-splitwiser/
-├── mobile/
-│   ├── app/              # Expo Router screens
-│   ├── components/       # Reusable UI (GlassCard, AnimatedBalanceBar)
-│   ├── screens/          # Feature screens
-│   ├── theme/            # Design system tokens
-│   ├── context/          # Auth + Groups state
-│   └── api/              # API client layer
-└── backend/
-    ├── routers/          # FastAPI route handlers
-    ├── models/           # MongoDB document models
-    └── services/         # Business logic
+# Run Vite dev server
+npm run dev
 ```
 
 ---
 
 ## 📄 License
-
 MIT — © 2026 Mohit Lakhara
